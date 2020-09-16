@@ -1,1 +1,1 @@
-# MMM-HourlyWeatherChart
+# MMM-WeatherChart
