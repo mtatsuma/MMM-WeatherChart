@@ -1,5 +1,5 @@
 /* Magic Mirror
- * Module: MMM-HourlyWeatherChart
+ * Module: MMM-WeatherChart
  *
  * By Tatsuma Matsuki
  * MIT Licensed.
@@ -8,18 +8,25 @@
  * https://github.com/sathyarajv/MMM-OpenmapWeather
  */
 
-Module.register("MMM-HourlyWeatherChart", {
+Module.register("MMM-WeatherChart", {
 	defaults: {
-		updateInterval: 30 * 60 * 1000,
+		updateInterval: 10 * 60 * 1000,
 		retryDelay: 5000,
-		apiUrl: "https://api.openweathermap.org/data/",
+		apiBase: "https://api.openweathermap.org/data/",
 		apiVersion: "2.5",
-		apiEndpoint: "forecast/hourly",
+		apiEndpoint: "onecall",
 		apiKey: "",
-		location: false,
-		locationID: false,
+		lat: "",
+		lon: "",
 		units: "metric",
-		lang: "en"
+		lang: "en",
+		chartjsVersion: "2.9.3",
+		chartjsDatalablesVersion: "0.7.0",
+		height: "300px",
+		width: "500px",
+		dataNum: 24,
+		timeOffsetHours: 0,
+		title: "Temparature Forecast"
 	},
 
 	requiresVersion: "2.12.0",
@@ -52,8 +59,8 @@ Module.register("MMM-HourlyWeatherChart", {
 			Log.error(self.name + ": apiKey must be specified");
 			return;
 		}
-		if (!this.config.location && !this.config.locationID) {
-			Log.error(self.name + ": location or locationID must be specified");
+		if (this.config.lat === "" && this.config.lon === "") {
+			Log.error(self.name + ": location (lat and lon) must be specified");
 			return;
 		}
 
@@ -83,11 +90,8 @@ Module.register("MMM-HourlyWeatherChart", {
 
 	getParams: function () {
 		var params = "?";
-		if (this.config.locationID) {
-			params += "id=" + this.config.locationID;
-		} else if (this.config.location) {
-			params += "q=" + this.config.location;
-		}
+		params += "lat=" + this.config.lat;
+		params += "&lon=" + this.config.lon;
 		params += "&units=" + this.config.units;
 		params += "&lang=" + this.config.lang;
 		params += "&appid=" + this.config.apiKey;
@@ -117,21 +121,60 @@ Module.register("MMM-HourlyWeatherChart", {
 	getDom: function () {
 		var self = this;
 
-		// create element wrapper for show into the module
-		var wrapper = document.createElement("div");
-		// If this.dataRequest is not empty
+		const wrapper = document.createElement("div");
+		wrapper.setAttribute(
+			"style",
+			"height: " + this.config.height + "; width: " + this.config.width + ";"
+		);
 		if (this.weatherdata) {
-			var wrapperWeatherData = document.createElement("div");
-			wrapperWeatherData.innerHTML = this.weatherdata.city.name + ": " + this.weatherdata.list[0].temp;
+			const wrapperCanvas = document.createElement("canvas"),
+				ctx = wrapperCanvas.getContext('2d'),
+				labels = [],
+				temps = [],
+				weathers = [],
+				hourlydata = this.weatherdata.hourly,
+				currentdata = this.weatherdata.current
+			console.log(new Date(currentdata.dt * 1000).toString())
+			for (let i = 0; i < Math.min(this.config.dataNum, hourlydata.length); i++) {
+				const dateTime = new Date(hourlydata[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
+				labels.push(dateTime.getHours())
+				temps.push(Math.round(hourlydata[i].temp * 10) / 10)
+				weathers.push(hourlydata[i].weather.main)
+			}
 
-			wrapper.appendChild(wrapperWeatherData);
+			this.chart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: labels,
+					datasets: [{
+						label: 'Temparature',
+						backgroundColor: 'rgba(0, 0, 0, 0)',
+						borderColor: 'rgb(255, 255, 255)',
+						datalabels: {
+							color: 'rgb(255, 255, 255)',
+							align: 'top'
+						},
+						data: temps
+					}]
+				},
+				options: {
+					title: {
+						display: true,
+						text: this.config.title
+					},
+					legend: {
+						display: false
+					}
+				}
+			});
+			wrapper.appendChild(wrapperCanvas);
 		}
 
 		// Data from helper
 		if (this.dataNotification) {
 			var wrapperDataNotification = document.createElement("div");
 			// translations  + datanotification
-			wrapperDataNotification.innerHTML = this.translate("UPDATE") + ": " + this.dataNotification.date;
+			wrapperDataNotification.innerHTML = "Updated at " + this.dataNotification.date;
 
 			wrapper.appendChild(wrapperDataNotification);
 		}
@@ -139,16 +182,19 @@ Module.register("MMM-HourlyWeatherChart", {
 	},
 
 	getScripts: function () {
-		return [];
+		// Load chart.js from CDN
+		return [
+			"https://cdn.jsdelivr.net/npm/chart.js@" + this.config.chartjsVersion + "/dist/Chart.min.js",
+			"https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@" + this.config.chartjsDatalablesVersion + "/dist/chartjs-plugin-datalabels.min.js"
+		];
 	},
 
 	getStyles: function () {
 		return [];
 	},
 
-	// Load translations files
 	getTranslations: function () {
-		return {};
+		return false;
 	},
 
 	processData: function (data) {
@@ -159,12 +205,12 @@ Module.register("MMM-HourlyWeatherChart", {
 
 		// the data if load
 		// send notification to helper
-		this.sendSocketNotification("MMM-HourlyWeatherChart-NOTIFICATION", data);
+		this.sendSocketNotification("MMM-WeatherChart-NOTIFICATION", data);
 	},
 
 	// socketNotificationReceived from helper
 	socketNotificationReceived: function (notification, payload) {
-		if (notification === "MMM-HourlyWeatherChart-NOTIFICATION") {
+		if (notification === "MMM-WeatherChart-NOTIFICATION") {
 			// set dataNotification
 			this.dataNotification = payload;
 			this.updateDom();
