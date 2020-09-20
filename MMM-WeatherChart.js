@@ -26,7 +26,8 @@ Module.register("MMM-WeatherChart", {
 		width: "500px",
 		dataNum: 24,
 		timeOffsetHours: 0,
-		title: "Temparature Forecast"
+		title: "Temparature Forecast",
+		iconBase: "https://openweathermap.org/img/wn/"
 	},
 
 	requiresVersion: "2.12.0",
@@ -131,17 +132,26 @@ Module.register("MMM-WeatherChart", {
 				ctx = wrapperCanvas.getContext('2d'),
 				labels = [],
 				temps = [],
-				weathers = [],
-				hourlydata = this.weatherdata.hourly,
-				currentdata = this.weatherdata.current
-			console.log(new Date(currentdata.dt * 1000).toString())
+				iconIDs = [],
+				hourlydata = this.weatherdata.hourly
+
 			for (let i = 0; i < Math.min(this.config.dataNum, hourlydata.length); i++) {
 				const dateTime = new Date(hourlydata[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
 				labels.push(dateTime.getHours())
 				temps.push(Math.round(hourlydata[i].temp * 10) / 10)
-				weathers.push(hourlydata[i].weather.main)
+				iconIDs.push(hourlydata[i].weather[0].icon)
 			}
 
+			const minTemp = temps.reduce((a, b) => Math.min(a, b)),
+				maxTemp = temps.reduce((a, b) => Math.max(a, b)),
+				underLine = [],
+				icons = []
+			for (let i = 0; i < temps.length; i++) {
+				underLine.push(minTemp - (maxTemp - minTemp) * 0.2)
+				let img = new Image()
+				img.src = this.config.iconBase + iconIDs[i] + ".png"
+				icons.push(img)
+			}
 			this.chart = new Chart(ctx, {
 				type: 'line',
 				data: {
@@ -155,6 +165,16 @@ Module.register("MMM-WeatherChart", {
 							align: 'top'
 						},
 						data: temps
+					},
+					{
+						label: 'Icons',
+						backgroundColor: 'rgba(0, 0, 0, 0)',
+						borderColor: 'rgba(0, 0, 0, 0)',
+						data: underLine,
+						pointStyle: icons,
+						datalabels: {
+							display: false
+						}
 					}]
 				},
 				options: {
@@ -164,6 +184,19 @@ Module.register("MMM-WeatherChart", {
 					},
 					legend: {
 						display: false
+					},
+					scales: {
+						yAxes: [
+							{
+								display: false
+							}
+						]
+					},
+					layout: {
+						padding: {
+							left: 20,
+							right: 20
+						}
 					}
 				}
 			});
