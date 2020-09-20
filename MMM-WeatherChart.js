@@ -24,10 +24,12 @@ Module.register("MMM-WeatherChart", {
 		chartjsDatalablesVersion: "0.7.0",
 		height: "300px",
 		width: "500px",
+		fontSize: 16,
 		dataNum: 24,
 		timeOffsetHours: 0,
 		title: "Temparature Forecast",
-		iconBase: "https://openweathermap.org/img/wn/"
+		iconURLBase: "https://openweathermap.org/img/wn/",
+		dataType: "hourly"
 	},
 
 	requiresVersion: "2.12.0",
@@ -119,6 +121,108 @@ Module.register("MMM-WeatherChart", {
 		}, nextLoad);
 	},
 
+	getHourlyDataset: function () {
+		const data = this.weatherdata.hourly,
+			temps = [],
+			labels = [],
+			iconIDs = [];
+		for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
+			const dateTime = new Date(data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
+			labels.push(dateTime.getHours());
+			temps.push(Math.round(data[i].temp * 10) / 10);
+			iconIDs.push(data[i].weather[0].icon);
+		};
+
+		const minTemp = temps.reduce((a, b) => Math.min(a, b)),
+			maxTemp = temps.reduce((a, b) => Math.max(a, b)),
+			underLine = [],
+			icons = [];
+		for (let i = 0; i < temps.length; i++) {
+			underLine.push(minTemp - (maxTemp - minTemp) * 0.2);
+			let img = new Image();
+			img.src = this.config.iconURLBase + iconIDs[i] + ".png";
+			icons.push(img);
+		};
+		const datasets = [{
+			label: 'Temparature',
+			backgroundColor: 'rgba(0, 0, 0, 0)',
+			borderColor: 'rgb(255, 255, 255)',
+			datalabels: {
+				color: 'rgb(255, 255, 255)',
+				align: 'top'
+			},
+			data: temps
+		},
+		{
+			label: 'Icons',
+			backgroundColor: 'rgba(0, 0, 0, 0)',
+			borderColor: 'rgba(0, 0, 0, 0)',
+			data: underLine,
+			pointStyle: icons,
+			datalabels: {
+				display: false
+			}
+		}];
+		return { labels: labels, datasets: datasets }
+	},
+
+	getDailyDataset: function () {
+		const data = this.weatherdata.daily,
+			maxTemps = [],
+			minTemps = [],
+			labels = [],
+			iconIDs = [];
+		for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
+			const dateTime = new Date(data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
+			labels.push(dateTime.getDate());
+			maxTemps.push(Math.round(data[i].temp.max * 10) / 10);
+			minTemps.push(Math.round(data[i].temp.min * 10) / 10);
+			iconIDs.push(data[i].weather[0].icon);
+		};
+
+		const minValue = minTemps.reduce((a, b) => Math.min(a, b)),
+			maxValue = minTemps.reduce((a, b) => Math.max(a, b)),
+			underLine = [],
+			icons = [];
+		for (let i = 0; i < minTemps.length; i++) {
+			underLine.push(minValue - (maxValue - minValue) * 0.2);
+			let img = new Image();
+			img.src = this.config.iconURLBase + iconIDs[i] + ".png";
+			icons.push(img);
+		};
+		const datasets = [{
+			label: 'Minimum Temparature',
+			backgroundColor: 'rgba(0, 0, 0, 0)',
+			borderColor: 'rgb(255, 255, 255)',
+			datalabels: {
+				color: 'rgb(255, 255, 255)',
+				align: 'top'
+			},
+			data: minTemps
+		},
+		{
+			label: 'Maximum Temparature',
+			backgroundColor: 'rgba(0, 0, 0, 0)',
+			borderColor: 'rgb(255, 255, 255)',
+			datalabels: {
+				color: 'rgb(255, 255, 255)',
+				align: 'top'
+			},
+			data: maxTemps
+		},
+		{
+			label: 'Icons',
+			backgroundColor: 'rgba(0, 0, 0, 0)',
+			borderColor: 'rgba(0, 0, 0, 0)',
+			data: underLine,
+			pointStyle: icons,
+			datalabels: {
+				display: false
+			}
+		}];
+		return { labels: labels, datasets: datasets }
+	},
+
 	getDom: function () {
 		var self = this;
 
@@ -129,53 +233,21 @@ Module.register("MMM-WeatherChart", {
 		);
 		if (this.weatherdata) {
 			const wrapperCanvas = document.createElement("canvas"),
-				ctx = wrapperCanvas.getContext('2d'),
-				labels = [],
-				temps = [],
-				iconIDs = [],
-				hourlydata = this.weatherdata.hourly
+				ctx = wrapperCanvas.getContext('2d');
 
-			for (let i = 0; i < Math.min(this.config.dataNum, hourlydata.length); i++) {
-				const dateTime = new Date(hourlydata[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
-				labels.push(dateTime.getHours())
-				temps.push(Math.round(hourlydata[i].temp * 10) / 10)
-				iconIDs.push(hourlydata[i].weather[0].icon)
+			let dataset;
+			if (this.config.dataType === "hourly") {
+				dataset = this.getHourlyDataset();
+			} else if (this.config.dataType == "daily") {
+				dataset = this.getDailyDataset();
 			}
 
-			const minTemp = temps.reduce((a, b) => Math.min(a, b)),
-				maxTemp = temps.reduce((a, b) => Math.max(a, b)),
-				underLine = [],
-				icons = []
-			for (let i = 0; i < temps.length; i++) {
-				underLine.push(minTemp - (maxTemp - minTemp) * 0.2)
-				let img = new Image()
-				img.src = this.config.iconBase + iconIDs[i] + ".png"
-				icons.push(img)
-			}
+			Chart.defaults.global.defaultFontSize = this.config.fontSize
 			this.chart = new Chart(ctx, {
 				type: 'line',
 				data: {
-					labels: labels,
-					datasets: [{
-						label: 'Temparature',
-						backgroundColor: 'rgba(0, 0, 0, 0)',
-						borderColor: 'rgb(255, 255, 255)',
-						datalabels: {
-							color: 'rgb(255, 255, 255)',
-							align: 'top'
-						},
-						data: temps
-					},
-					{
-						label: 'Icons',
-						backgroundColor: 'rgba(0, 0, 0, 0)',
-						borderColor: 'rgba(0, 0, 0, 0)',
-						data: underLine,
-						pointStyle: icons,
-						datalabels: {
-							display: false
-						}
-					}]
+					labels: dataset.labels,
+					datasets: dataset.datasets
 				},
 				options: {
 					title: {
