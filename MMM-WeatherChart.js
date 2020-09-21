@@ -18,7 +18,7 @@ Module.register("MMM-WeatherChart", {
 		apiKey: "",
 		lat: "",
 		lon: "",
-		units: "metric",
+		units: "standard",
 		lang: "en",
 		chartjsVersion: "2.9.3",
 		chartjsDatalablesVersion: "0.7.0",
