@@ -27,7 +27,7 @@ Module.register("MMM-WeatherChart", {
 		fontSize: 16,
 		dataNum: 24,
 		timeOffsetHours: 0,
-		title: "Temparature Forecast",
+		title: "Weather Forecast",
 		iconURLBase: "https://openweathermap.org/img/wn/",
 		dataType: "hourly"
 	},
@@ -146,9 +146,10 @@ Module.register("MMM-WeatherChart", {
 		const datasets = [{
 			label: 'Temparature',
 			backgroundColor: 'rgba(0, 0, 0, 0)',
-			borderColor: 'rgb(255, 255, 255)',
+			borderColor: 'rgba(255, 255, 255, 1)',
+			pointBackgroundColor: 'rgba(255, 255, 255, 1)',
 			datalabels: {
-				color: 'rgb(255, 255, 255)',
+				color: 'rgba(255, 255, 255, 1)',
 				align: 'top'
 			},
 			data: temps
@@ -193,9 +194,10 @@ Module.register("MMM-WeatherChart", {
 		const datasets = [{
 			label: 'Minimum Temparature',
 			backgroundColor: 'rgba(0, 0, 0, 0)',
-			borderColor: 'rgb(255, 255, 255)',
+			borderColor: 'rgba(255, 255, 255, 1)',
+			pointBackgroundColor: 'rgba(255, 255, 255, 1)',
 			datalabels: {
-				color: 'rgb(255, 255, 255)',
+				color: 'rgba(255, 255, 255, 1)',
 				align: 'top'
 			},
 			data: minTemps
@@ -203,9 +205,10 @@ Module.register("MMM-WeatherChart", {
 		{
 			label: 'Maximum Temparature',
 			backgroundColor: 'rgba(0, 0, 0, 0)',
-			borderColor: 'rgb(255, 255, 255)',
+			borderColor: 'rgba(255, 255, 255, 1)',
+			pointBackgroundColor: 'rgba(255, 255, 255, 1)',
 			datalabels: {
-				color: 'rgb(255, 255, 255)',
+				color: 'rgba(255, 255, 255, 1)',
 				align: 'top'
 			},
 			data: maxTemps
