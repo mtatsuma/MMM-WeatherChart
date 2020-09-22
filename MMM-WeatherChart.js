@@ -29,7 +29,8 @@ Module.register("MMM-WeatherChart", {
 		timeOffsetHours: 0,
 		title: "Weather Forecast",
 		iconURLBase: "https://openweathermap.org/img/wn/",
-		dataType: "hourly"
+		dataType: "hourly",
+		nightBorderDash: [5, 1],
 	},
 
 	requiresVersion: "2.12.0",
@@ -124,13 +125,44 @@ Module.register("MMM-WeatherChart", {
 	getHourlyDataset: function () {
 		const data = this.weatherdata.hourly,
 			temps = [],
+			dayTemps = [],
+			nightTemps = [],
 			labels = [],
 			iconIDs = [];
+		data.sort(function (a, b) {
+			if (a.dt < b.dt) return -1;
+			if (a.dt > b.dt) return 1;
+			return 0;
+		});
+		let dayTime;
 		for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
-			const dateTime = new Date(data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
+			let dateTime = new Date(data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000);
+			let iconID = data[i].weather[0].icon;
+			let temp = Math.round(data[i].temp * 10) / 10;
+			if (i === 0) {
+				dayTime = Boolean(iconID.match(/d$/))
+			};
 			labels.push(dateTime.getHours());
-			temps.push(Math.round(data[i].temp * 10) / 10);
-			iconIDs.push(data[i].weather[0].icon);
+			if (iconID.match(/d$/)) {
+				dayTemps.push(temp);
+				if (!dayTime) {
+					nightTemps.push(temp);
+				} else {
+					nightTemps.push(NaN);
+				}
+				dayTime = true;
+			};
+			if (iconID.match(/n$/)) {
+				nightTemps.push(temp);
+				if (dayTime) {
+					dayTemps.push(temp);
+				} else {
+					dayTemps.push(NaN);
+				};
+				dayTime = false;
+			};
+			temps.push(temp);
+			iconIDs.push(iconID);
 		};
 
 		const minTemp = temps.reduce((a, b) => Math.min(a, b)),
@@ -144,7 +176,7 @@ Module.register("MMM-WeatherChart", {
 			icons.push(img);
 		};
 		const datasets = [{
-			label: 'Temparature',
+			label: 'Day Temparature',
 			backgroundColor: 'rgba(0, 0, 0, 0)',
 			borderColor: 'rgba(255, 255, 255, 1)',
 			pointBackgroundColor: 'rgba(255, 255, 255, 1)',
@@ -152,7 +184,19 @@ Module.register("MMM-WeatherChart", {
 				color: 'rgba(255, 255, 255, 1)',
 				align: 'top'
 			},
-			data: temps
+			data: dayTemps
+		},
+		{
+			label: 'Night Temparature',
+			backgroundColor: 'rgba(0, 0, 0, 0)',
+			borderColor: 'rgba(255, 255, 255, 1)',
+			borderDash: this.config.nightBorderDash,
+			pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+			datalabels: {
+				color: 'rgba(255, 255, 255, 1)',
+				align: 'top'
+			},
+			data: nightTemps
 		},
 		{
 			label: 'Icons',
@@ -173,6 +217,11 @@ Module.register("MMM-WeatherChart", {
 			minTemps = [],
 			labels = [],
 			iconIDs = [];
+		data.sort(function (a, b) {
+			if (a.dt < b.dt) return -1;
+			if (a.dt > b.dt) return 1;
+			return 0;
+		});
 		for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
 			const dateTime = new Date(data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
 			labels.push(dateTime.getDate());

@@ -8,7 +8,7 @@ Daily Forecast (max and min temparature and weather icons)
 
 ![image](https://user-images.githubusercontent.com/48573325/93776263-5ae05c80-fc5e-11ea-82f3-c05056284ddb.png)
 
-MagicMirror module for displaying weather forecasts from [OpenWeather](https://openweathermap.org/). Weather forecasts are diplayed by using [Chart.js](https://www.chartjs.org/), an open-source free library for drawing graph.
+MagicMirror module for displaying weather forecasts from [OpenWeather](https://openweathermap.org/). Weather forecasts are displayed by using [Chart.js](https://www.chartjs.org/), an open-source free library for drawing charts.
 
 This module can work with free OpenWeather API, which only requires to sign up and get an API key.
 
@@ -66,3 +66,4 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | iconURLBase | | `https://openweathermap.org/img/wn/` | Base URL to get weather icons. By default, icons provided from OpenWeather is used. If you want to use your own icons, you must prepare icon image files whose name is the `<icon ID>.png`. The icon ID is documented in [Weather conditions](https://openweathermap.org/weather-conditions#How-to-get-icon-URL) |
 | dataType | | `hourly` | Data type to display. `hourly` or `daily` is available. |
 | dataNum | | `24` | Number of data to display. When you set this value as larger than the maximum number of data returned from [OpenWeather API document](https://openweathermap.org/api/one-call-api) API, the number of data is automatically set as the maximum number of data from [OpenWeather API document](https://openweathermap.org/api/one-call-api) API. |
+| nightBorderDash | | `[5, 1]` | Style of dash line for nighttime (`[<line length>, <blank length>]`). This option is available only for `hourly` data type. |
