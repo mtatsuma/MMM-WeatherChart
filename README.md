@@ -1,12 +1,12 @@
 # MMM-WeatherChart
 
-Hourly Forecast (temparature and weather icons)
+Hourly Forecast (temparature, weather icons on the top, rain volume on the bottom)
 
-![image](https://user-images.githubusercontent.com/48573325/93776105-2a98be00-fc5e-11ea-9476-77ff54cbd1af.png)
+![image](https://user-images.githubusercontent.com/48573325/94290828-b0d23e80-ff95-11ea-8c32-b9c4b13d2b8a.png)
 
-Daily Forecast (max and min temparature and weather icons)
+Daily Forecast (max and min temparature, weather icons on the top, rain volume on the bottom)
 
-![image](https://user-images.githubusercontent.com/48573325/93776263-5ae05c80-fc5e-11ea-82f3-c05056284ddb.png)
+![image](https://user-images.githubusercontent.com/48573325/94291243-54bbea00-ff96-11ea-83f9-0873b4dd8faf.png)
 
 MagicMirror module for displaying weather forecasts from [OpenWeather](https://openweathermap.org/). Weather forecasts are displayed by using [Chart.js](https://www.chartjs.org/), an open-source free library for drawing charts.
 
@@ -65,5 +65,10 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | title | | `Weather Forecast` | Title of the chart to display |
 | iconURLBase | | `https://openweathermap.org/img/wn/` | Base URL to get weather icons. By default, icons provided from OpenWeather is used. If you want to use your own icons, you must prepare icon image files whose name is the `<icon ID>.png`. The icon ID is documented in [Weather conditions](https://openweathermap.org/weather-conditions#How-to-get-icon-URL) |
 | dataType | | `hourly` | Data type to display. `hourly` or `daily` is available. |
-| dataNum | | `24` | Number of data to display. When you set this value as larger than the maximum number of data returned from [OpenWeather API document](https://openweathermap.org/api/one-call-api) API, the number of data is automatically set as the maximum number of data from [OpenWeather API document](https://openweathermap.org/api/one-call-api) API. |
+| dataNum | | `24` | Number of data to display. When you set this value as larger than the maximum number of data returned from [OpenWeather API](https://openweathermap.org/api/one-call-api), the number of data is automatically set as the maximum number of data from [OpenWeather API document](https://openweathermap.org/api/one-call-api) API. |
 | nightBorderDash | | `[5, 1]` | Style of dash line for nighttime (`[<line length>, <blank length>]`). This option is available only for `hourly` data type. |
+| showIcon | | `false` | Show weather Icon on the top |
+| showRain | | `false` | Show rain volume (mm) on the bottom |
+| color | | `rgba(255, 255, 255, 1)` | Color of line and letters |
+| backgroundColor | | `rgba(0, 0, 0, 0)` | Color of background |
+| fillColor | | `rgba(255, 255, 255, 0.1)` | Color for filling rain volume line |
