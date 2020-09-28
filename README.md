@@ -1,10 +1,10 @@
 # MMM-WeatherChart
 
-Hourly Forecast (temparature, weather icons on the top, rain volume on the bottom)
+Hourly Forecast (temperature, weather icons on the top, rain volume on the bottom)
 
 ![image](https://user-images.githubusercontent.com/48573325/94290828-b0d23e80-ff95-11ea-8c32-b9c4b13d2b8a.png)
 
-Daily Forecast (max and min temparature, weather icons on the top, rain volume on the bottom)
+Daily Forecast (max and min temperature, weather icons on the top, rain volume on the bottom)
 
 ![image](https://user-images.githubusercontent.com/48573325/94291243-54bbea00-ff96-11ea-83f9-0873b4dd8faf.png)
 
@@ -23,7 +23,7 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 
 ## Configuration
 
-### Configuration Exmaple
+### Configuration Example
 ```
    modules: [
         {
@@ -53,8 +53,8 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | apiVersion | | `2.5` | Version of [OpenWeather](https://openweathermap.org/) API |
 | apiEndpoint | | `onecall` | [OpenWeather](https://openweathermap.org/) API endpoint. [One Call API](https://openweathermap.org/api/one-call-api) is used by default, which is available for Free subscription. Note: Don't change this option because other endpoint is not supported! |
 | apiKey | yes | | API key to call [OpenWeather](https://openweathermap.org/) API. You can get the API key by signing up [OpenWeather](https://openweathermap.org/). |
-| lat | yes | | longitude of the place you want to get weather information |
-| lon | yes | | latitude of the place you want to get weather information |
+| lat | yes | | latitude of the place you want to get weather information |
+| lon | yes | | longitude of the place you want to get weather information |
 | units | | `standard` | Units of measurement documented in [OpenWeather API document](https://openweathermap.org/api/one-call-api). `standard`, `metric` and `imperial` units are available. |
 | chartjsVersion | | `2.9.3` | Version of [Chart.js](https://www.chartjs.org/) |
 | chartjsDatalablesVersion | | `0.7.0` | Version of Chart.js [Datalabels plugin](https://github.com/chartjs/chartjs-plugin-datalabels) |
