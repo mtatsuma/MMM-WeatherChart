@@ -34,7 +34,7 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
                 "dataNum": 12,
                 "dataType": "hourly",
                 "height": "500px",
-                "width": "800px"
+                "width": "800px",
                 "lat": 35.571337,
                 "lon": 139.633989,
                 "units": "metric",
@@ -72,3 +72,4 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | color | | `rgba(255, 255, 255, 1)` | Color of line and letters |
 | backgroundColor | | `rgba(0, 0, 0, 0)` | Color of background |
 | fillColor | | `rgba(255, 255, 255, 0.1)` | Color for filling rain volume line |
+| dailyLabel | | `date` | Label of x-axis for the daily forecast chart. The available labels are `date` or `days_of_week` or `date+days_of_week` |
