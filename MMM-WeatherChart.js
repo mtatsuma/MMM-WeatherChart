@@ -35,7 +35,8 @@ Module.register("MMM-WeatherChart", {
         showRain: false,
         color: 'rgba(255, 255, 255, 1)',
         backgroundColor: 'rgba(0, 0, 0, 0)',
-        fillColor: 'rgba(255, 255, 255, 0.1)'
+        fillColor: 'rgba(255, 255, 255, 0.1)',
+        dailyLabel: 'date'
     },
 
     requiresVersion: "2.12.0",
@@ -108,6 +109,18 @@ Module.register("MMM-WeatherChart", {
         return params;
     },
 
+    getDayString: function (num) {
+        let dayString = [];
+        dayString.push('Su.');
+        dayString.push('Mo.');
+        dayString.push('Tu.');
+        dayString.push('We.');
+        dayString.push('Tu.');
+        dayString.push('Fr.');
+        dayString.push('Sa.');
+
+        return dayString[num];
+    },
 
     /* scheduleUpdate()
      * Schedule next update.
@@ -285,7 +298,13 @@ Module.register("MMM-WeatherChart", {
         });
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
             const dateTime = new Date(data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
-            labels.push(dateTime.getDate());
+            if (this.config.dailyLabel == "date") {
+                labels.push(dateTime.getDate());
+            } else if (this.config.dailyLabel == "days_of_week") {
+                labels.push(this.getDayString(dateTime.getDay()))
+            } else if (this.config.dailyLabel == "date+days_of_week") {
+                labels.push(this.getDayString(dateTime.getDay()) + ' ' + dateTime.getDate())
+            }
             maxTemps.push(Math.round(data[i].temp.max * 10) / 10);
             minTemps.push(Math.round(data[i].temp.min * 10) / 10);
             if (data[i].rain) {
