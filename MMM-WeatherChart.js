@@ -115,7 +115,7 @@ Module.register("MMM-WeatherChart", {
         dayString.push('Mo.');
         dayString.push('Tu.');
         dayString.push('We.');
-        dayString.push('Tu.');
+        dayString.push('Th.');
         dayString.push('Fr.');
         dayString.push('Sa.');
 
