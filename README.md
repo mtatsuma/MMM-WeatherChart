@@ -73,3 +73,4 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | backgroundColor | | `rgba(0, 0, 0, 0)` | Color of background |
 | fillColor | | `rgba(255, 255, 255, 0.1)` | Color for filling rain volume line |
 | dailyLabel | | `date` | Label of x-axis for the daily forecast chart. The available labels are `date` or `days_of_week` or `date+days_of_week` |
+| hourFormat | | `24h` | Hour label format for hourly forecast charts (`24h` or `12h`). If it's `24h`, the format is [0, 1, 2, ..., 22, 23]. If it's `12h`, the format is [12am, 1am, 2am, ..., 10pm, 11pm]. |
