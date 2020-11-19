@@ -36,7 +36,8 @@ Module.register("MMM-WeatherChart", {
         color: 'rgba(255, 255, 255, 1)',
         backgroundColor: 'rgba(0, 0, 0, 0)',
         fillColor: 'rgba(255, 255, 255, 0.1)',
-        dailyLabel: 'date'
+        dailyLabel: 'date',
+        hourFormat: "24h"
     },
 
     requiresVersion: "2.12.0",
@@ -122,6 +123,17 @@ Module.register("MMM-WeatherChart", {
         return dayString[num];
     },
 
+    getHourString: function (hour) {
+        if (this.config.hourFormat == "12h") {
+            let ampm = hour < 12 ? 'am' : 'pm';
+            let h = hour % 12;
+            h = h ? h : 12;
+            return `${h}${ampm}`;
+        } else {
+            return hour;
+        };
+    },
+
     /* scheduleUpdate()
      * Schedule next update.
      *
@@ -161,7 +173,7 @@ Module.register("MMM-WeatherChart", {
             if (i === 0) {
                 dayTime = Boolean(iconID.match(/d$/))
             };
-            labels.push(dateTime.getHours());
+            labels.push(this.getHourString(dateTime.getHours()));
             if (iconID.match(/d$/)) {
                 dayTemps.push(temp);
                 if (!dayTime) {
