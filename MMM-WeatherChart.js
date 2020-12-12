@@ -33,6 +33,7 @@ Module.register("MMM-WeatherChart", {
         nightBorderDash: [5, 1],
         showIcon: false,
         showRain: false,
+        rainUnit: "mm",
         color: 'rgba(255, 255, 255, 1)',
         backgroundColor: 'rgba(0, 0, 0, 0)',
         fillColor: 'rgba(255, 255, 255, 0.1)',
@@ -134,6 +135,14 @@ Module.register("MMM-WeatherChart", {
         };
     },
 
+    formatRain: function (rain) {
+        if (this.config.rainUnit == "inch") {
+            return Math.round((rain / 25.4) * 100) / 100;
+        } else {
+            return Math.round(rain * 10) / 10;
+        };
+    },
+
     /* scheduleUpdate()
      * Schedule next update.
      *
@@ -194,7 +203,7 @@ Module.register("MMM-WeatherChart", {
             };
             temps.push(temp);
             if (data[i].rain) {
-                rains.push(Math.round(data[i].rain["1h"] * 10) / 10);
+                rains.push(this.formatRain(data[i].rain["1h"]));
             } else {
                 rains.push(0)
             }
@@ -260,7 +269,7 @@ Module.register("MMM-WeatherChart", {
         };
         if (this.config.showRain) {
             datasets.push({
-                label: 'Rain Volume (mm)',
+                label: 'Rain Volume',
                 backgroundColor: this.config.fillColor,
                 borderColor: this.config.color,
                 borderWidth: 1,
@@ -320,7 +329,7 @@ Module.register("MMM-WeatherChart", {
             maxTemps.push(Math.round(data[i].temp.max * 10) / 10);
             minTemps.push(Math.round(data[i].temp.min * 10) / 10);
             if (data[i].rain) {
-                rains.push(Math.round(data[i].rain * 10) / 10);
+                rains.push(this.formatRain(data[i].rain));
             } else {
                 rains.push(0)
             }
@@ -385,7 +394,7 @@ Module.register("MMM-WeatherChart", {
         };
         if (this.config.showRain) {
             datasets.push({
-                label: 'Rain Volume (mm)',
+                label: 'Rain Volume',
                 backgroundColor: this.config.fillColor,
                 borderColor: this.config.color,
                 borderWidth: 1,
