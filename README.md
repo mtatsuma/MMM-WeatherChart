@@ -68,7 +68,8 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | dataNum | | `24` | Number of data to display. When you set this value as larger than the maximum number of data returned from [OpenWeather API](https://openweathermap.org/api/one-call-api), the number of data is automatically set as the maximum number of data from [OpenWeather API document](https://openweathermap.org/api/one-call-api) API. |
 | nightBorderDash | | `[5, 1]` | Style of dash line for nighttime (`[<line length>, <blank length>]`). This option is available only for `hourly` data type. |
 | showIcon | | `false` | Show weather Icon on the top |
-| showRain | | `false` | Show rain volume (mm) on the bottom |
+| showRain | | `false` | Show rain volume on the bottom |
+| rainUnit | | `mm` | Unit of rain volume (`mm` or `inch`). For `mm` unit, the value is rounded to the first decimal place. For `inch` unit, the value is rounded to the second decimal place. |
 | color | | `rgba(255, 255, 255, 1)` | Color of line and letters |
 | backgroundColor | | `rgba(0, 0, 0, 0)` | Color of background |
 | fillColor | | `rgba(255, 255, 255, 0.1)` | Color for filling rain volume line |
