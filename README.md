@@ -70,6 +70,7 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | showIcon | | `false` | Show weather Icon on the top |
 | showRain | | `false` | Show rain volume on the bottom |
 | rainUnit | | `mm` | Unit of rain volume (`mm` or `inch`). For `mm` unit, the value is rounded to the first decimal place. For `inch` unit, the value is rounded to the second decimal place. |
+| rainMinHeight | | `0.01` | Minimum height (in mm or inch) of the rain volume chart. When the max rain volume in the chart is less than this value, the height of chart is set as this value. Otherwise, the height of the chart is set acoording to the max rain volume. |
 | color | | `rgba(255, 255, 255, 1)` | Color of line and letters |
 | backgroundColor | | `rgba(0, 0, 0, 0)` | Color of background |
 | fillColor | | `rgba(255, 255, 255, 0.1)` | Color for filling rain volume line |
