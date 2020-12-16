@@ -362,7 +362,7 @@ Module.register("MMM-WeatherChart", {
             pointBackgroundColor: this.config.color,
             datalabels: {
                 color: this.config.color,
-                align: 'top'
+                align: 'bottom'
             },
             data: minTemps,
             yAxisID: "y1"
@@ -412,7 +412,7 @@ Module.register("MMM-WeatherChart", {
         // Set Y-Axis range not to overlap each other
         let y1_max = iconLine[0] + (maxValue - minValue) * 0.1,
             y1_min = minValue - (maxValue - minValue) * 0.2,
-            y2_max = Math.max(maxRain * 2.5, 0.1),
+            y2_max = Math.max(maxRain * 3.2, 0.1),
             y2_min = 0;
         if (this.config.showRain) {
             y1_min = y1_min - (maxValue - minValue);
