@@ -413,7 +413,7 @@ Module.register("MMM-WeatherChart", {
         // Set Y-Axis range not to overlap each other
         let y1_max = iconLine[0] + (maxValue - minValue) * 0.1,
             y1_min = minValue - (maxValue - minValue) * 0.2,
-            y2_max = Math.max(maxRain, this.config.maxRain) * 3.2,
+            y2_max = Math.max(maxRain, this.config.rainMinHeight) * 3.2,
             y2_min = 0;
         if (this.config.showRain) {
             y1_min = y1_min - (maxValue - minValue);
