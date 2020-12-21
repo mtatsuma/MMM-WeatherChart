@@ -35,6 +35,8 @@ Module.register("MMM-WeatherChart", {
         showRain: false,
         rainUnit: "mm",
         rainMinHeight: 0.01,
+        includeSnow: false,
+        showSnow: false,
         color: 'rgba(255, 255, 255, 1)',
         backgroundColor: 'rgba(0, 0, 0, 0)',
         fillColor: 'rgba(255, 255, 255, 0.1)',
@@ -166,6 +168,7 @@ Module.register("MMM-WeatherChart", {
         const data = this.weatherdata.hourly,
             temps = [],
             rains = [],
+            snows = [],
             dayTemps = [],
             nightTemps = [],
             labels = [],
@@ -204,9 +207,22 @@ Module.register("MMM-WeatherChart", {
             };
             temps.push(temp);
             if (data[i].rain) {
-                rains.push(this.formatRain(data[i].rain["1h"]));
+                if (data[i].snow && this.config.includeSnow) {
+                    rains.push(this.formatRain(data[i].rain["1h"] + data[i].snow["1h"]));
+                } else {
+                    rains.push(this.formatRain(data[i].rain["1h"]));
+                }
             } else {
-                rains.push(0)
+                if (data[i].snow && this.config.includeSnow) {
+                    rains.push(this.formatRain(data[i].snow["1h"]));
+                } else {
+                    rains.push(0);
+                }
+            }
+            if (data[i].snow) {
+                snows.push(this.formatRain(data[i].snow["1h"]));
+            } else {
+                snows.push(0);
             }
             iconIDs.push(iconID);
         };
@@ -214,6 +230,7 @@ Module.register("MMM-WeatherChart", {
         const minTemp = temps.reduce((a, b) => Math.min(a, b)),
             maxTemp = temps.reduce((a, b) => Math.max(a, b)),
             maxRain = rains.reduce((a, b) => Math.max(a, b)),
+            maxSnow = snows.reduce((a, b) => Math.max(a, b)),
             iconLine = [],
             icons = [];
 
@@ -283,13 +300,36 @@ Module.register("MMM-WeatherChart", {
                 yAxisID: "y2"
             })
         };
+        if (this.config.showSnow) {
+            datasets.push({
+                label: 'Snow Volume',
+                backgroundColor: this.config.fillColor,
+                borderColor: this.config.color,
+                borderWidth: 1,
+                pointBackgroundColor: this.config.color,
+                datalabels: {
+                    color: this.config.color,
+                    display: this.config.showRain ? false : true,
+                    align: 'top'
+                },
+                data: snows,
+                pointStyle: 'star',
+                pointRadius: function (context) {
+                    let value = context.dataset.data[context.dataIndex];
+                    return value == 0 ? 3 : 6;
+                },
+                yAxisID: "y2"
+            })
+        };
 
         // Set Y-Axis range not to overlap each other
         let y1_max = iconLine[0] + (maxTemp - minTemp) * 0.1,
             y1_min = minTemp - (maxTemp - minTemp) * 0.2,
-            y2_max = Math.max(maxRain, this.config.rainMinHeight) * 2.8,
+            y2_max = Math.max(
+                maxRain, maxSnow, this.config.rainMinHeight
+            ) * 2.8,
             y2_min = 0;
-        if (this.config.showRain) {
+        if (this.config.showRain || this.config.showSnow) {
             y1_min = y1_min - (maxTemp - minTemp);
         };
         const ranges = {
@@ -311,6 +351,7 @@ Module.register("MMM-WeatherChart", {
             maxTemps = [],
             minTemps = [],
             rains = [],
+            snows = [],
             labels = [],
             iconIDs = [];
         data.sort(function (a, b) {
@@ -330,9 +371,22 @@ Module.register("MMM-WeatherChart", {
             maxTemps.push(Math.round(data[i].temp.max * 10) / 10);
             minTemps.push(Math.round(data[i].temp.min * 10) / 10);
             if (data[i].rain) {
-                rains.push(this.formatRain(data[i].rain));
+                if (data[i].snow && this.config.includeSnow) {
+                    rains.push(this.formatRain(data[i].rain + data[i].snow));
+                } else {
+                    rains.push(this.formatRain(data[i].rain));
+                }
             } else {
-                rains.push(0)
+                if (data[i].snow && this.config.includeSnow) {
+                    rains.push(this.formatRain(data[i].snow));
+                } else {
+                    rains.push(0);
+                }
+            }
+            if (data[i].snow) {
+                snows.push(this.formatRain(data[i].snow));
+            } else {
+                snows.push(0);
             }
             iconIDs.push(data[i].weather[0].icon);
         };
@@ -340,6 +394,7 @@ Module.register("MMM-WeatherChart", {
         const minValue = minTemps.reduce((a, b) => Math.min(a, b)),
             maxValue = maxTemps.reduce((a, b) => Math.max(a, b)),
             maxRain = rains.reduce((a, b) => Math.max(a, b)),
+            maxSnow = snows.reduce((a, b) => Math.max(a, b)),
             iconLine = [],
             icons = [];
 
@@ -408,14 +463,36 @@ Module.register("MMM-WeatherChart", {
                 yAxisID: "y2"
             })
         };
-
+        if (this.config.showSnow) {
+            datasets.push({
+                label: 'Snow Volume',
+                backgroundColor: this.config.fillColor,
+                borderColor: this.config.color,
+                borderWidth: 1,
+                pointBackgroundColor: this.config.color,
+                datalabels: {
+                    color: this.config.color,
+                    display: this.config.showRain ? false : true,
+                    align: 'top'
+                },
+                data: snows,
+                pointStyle: 'star',
+                pointRadius: function (context) {
+                    let value = context.dataset.data[context.dataIndex];
+                    return value == 0 ? 3 : 6;
+                },
+                yAxisID: "y2"
+            })
+        };
 
         // Set Y-Axis range not to overlap each other
         let y1_max = iconLine[0] + (maxValue - minValue) * 0.1,
             y1_min = minValue - (maxValue - minValue) * 0.2,
-            y2_max = Math.max(maxRain, this.config.rainMinHeight) * 3.2,
+            y2_max = Math.max(
+                maxRain, maxSnow, this.config.rainMinHeight
+            ) * 3.2,
             y2_min = 0;
-        if (this.config.showRain) {
+        if (this.config.showRain || this.config.showSnow) {
             y1_min = y1_min - (maxValue - minValue);
         };
         const ranges = {
