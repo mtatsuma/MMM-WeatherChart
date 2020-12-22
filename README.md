@@ -4,9 +4,9 @@ Hourly Forecast (temperature, weather icons on the top, rain volume on the botto
 
 ![image](https://user-images.githubusercontent.com/48573325/94290828-b0d23e80-ff95-11ea-8c32-b9c4b13d2b8a.png)
 
-Daily Forecast (max and min temperature, weather icons on the top, rain volume on the bottom)
+Daily Forecast (max and min temperature, weather icons on the top, rain volume (include snow) on the bottom)
 
-![image](https://user-images.githubusercontent.com/48573325/94291243-54bbea00-ff96-11ea-83f9-0873b4dd8faf.png)
+![image](https://user-images.githubusercontent.com/48573325/102897630-abf52c00-44ab-11eb-9baa-224532511f65.png)
 
 MagicMirror module for displaying weather forecasts from [OpenWeather](https://openweathermap.org/). Weather forecasts are displayed by using [Chart.js](https://www.chartjs.org/), an open-source free library for drawing charts.
 
@@ -71,6 +71,8 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | showRain | | `false` | Show rain volume on the bottom |
 | rainUnit | | `mm` | Unit of rain volume (`mm` or `inch`). For `mm` unit, the value is rounded to the first decimal place. For `inch` unit, the value is rounded to the second decimal place. |
 | rainMinHeight | | `0.01` | Minimum height (in mm or inch) of the rain volume chart. When the max rain volume in the chart is less than this value, the height of chart is set as this value. Otherwise, the height of the chart is set acoording to the max rain volume. |
+| includeSnow | | `false` | If true, snow volume is included in the rain volume chart and the chart means rain + snow volume (i.e. precipitation). |
+| showSnow | | `false` | Show snow volume line in the rain volume chart. If you enable both of showRain and showSnow, datalabels for snow volume is not appeared because those can overlap with the rain volume datalabels. |
 | color | | `rgba(255, 255, 255, 1)` | Color of line and letters |
 | backgroundColor | | `rgba(0, 0, 0, 0)` | Color of background |
 | fillColor | | `rgba(255, 255, 255, 0.1)` | Color for filling rain volume line |
