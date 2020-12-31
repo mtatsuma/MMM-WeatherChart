@@ -32,6 +32,8 @@ Module.register("MMM-WeatherChart", {
         dataType: "hourly",
         nightBorderDash: [5, 1],
         showIcon: false,
+        iconHeight: 50,
+        iconWidth: 50,
         showRain: false,
         rainUnit: "mm",
         rainMinHeight: 0.01,
@@ -146,6 +148,22 @@ Module.register("MMM-WeatherChart", {
         };
     },
 
+    getIconImage: function (iconId, callback) {
+        let self = this;
+        let iconCanvas = document.createElement('canvas');
+        let iconContext = iconCanvas.getContext('2d');
+        let iconImage = new Image();
+        iconImage.onload = function () {
+            iconImage.width = self.config.iconWidth;
+            iconImage.height = self.config.iconHeight;
+            iconCanvas.width = iconImage.width;
+            iconCanvas.height = iconImage.height;
+            iconContext.drawImage(iconImage, 0, 0, iconImage.width, iconImage.height);
+            callback(iconCanvas);
+        };
+        iconImage.src = this.config.iconURLBase + iconId + ".png";
+    },
+
     /* scheduleUpdate()
      * Schedule next update.
      *
@@ -241,9 +259,9 @@ Module.register("MMM-WeatherChart", {
                 v = maxTemp + (maxTemp - minTemp) * 0.3;
             };
             iconLine.push(v);
-            let img = new Image();
-            img.src = this.config.iconURLBase + iconIDs[i] + ".png";
-            icons.push(img);
+            this.getIconImage(iconIDs[i], function (image) {
+                icons.push(image);
+            });
         };
 
         const datasets = []
@@ -405,9 +423,9 @@ Module.register("MMM-WeatherChart", {
                 v = maxValue + (maxValue - minValue) * 0.3;
             }
             iconLine.push(v);
-            let img = new Image();
-            img.src = this.config.iconURLBase + iconIDs[i] + ".png";
-            icons.push(img);
+            this.getIconImage(iconIDs[i], function (image) {
+                icons.push(image);
+            });
         };
 
         const datasets = []
