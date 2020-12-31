@@ -537,6 +537,7 @@ Module.register("MMM-WeatherChart", {
                     datasets: dataset.datasets
                 },
                 options: {
+                    maintainAspectRatio: false,
                     title: {
                         display: true,
                         text: this.config.title
