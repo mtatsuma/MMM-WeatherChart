@@ -35,10 +35,12 @@ Module.register("MMM-WeatherChart", {
         iconHeight: 50,
         iconWidth: 50,
         showRain: false,
+        showZeroRain: true,
         rainUnit: "mm",
         rainMinHeight: 0.01,
         includeSnow: false,
         showSnow: false,
+        showZeroSnow: true,
         color: 'rgba(255, 255, 255, 1)',
         backgroundColor: 'rgba(0, 0, 0, 0)',
         fillColor: 'rgba(255, 255, 255, 0.1)',
@@ -304,40 +306,44 @@ Module.register("MMM-WeatherChart", {
             })
         };
         if (this.config.showRain) {
-            datasets.push({
-                label: 'Rain Volume',
-                backgroundColor: this.config.fillColor,
-                borderColor: this.config.color,
-                borderWidth: 1,
-                pointBackgroundColor: this.config.color,
-                datalabels: {
-                    color: this.config.color,
-                    align: 'top'
-                },
-                data: rains,
-                yAxisID: "y2"
-            })
+            if (this.config.showZeroRain || maxRain > 0) {
+                datasets.push({
+                    label: 'Rain Volume',
+                    backgroundColor: this.config.fillColor,
+                    borderColor: this.config.color,
+                    borderWidth: 1,
+                    pointBackgroundColor: this.config.color,
+                    datalabels: {
+                        color: this.config.color,
+                        align: 'top'
+                    },
+                    data: rains,
+                    yAxisID: "y2"
+                })
+            }
         };
         if (this.config.showSnow) {
-            datasets.push({
-                label: 'Snow Volume',
-                backgroundColor: this.config.fillColor,
-                borderColor: this.config.color,
-                borderWidth: 1,
-                pointBackgroundColor: this.config.color,
-                datalabels: {
-                    color: this.config.color,
-                    display: this.config.showRain ? false : true,
-                    align: 'top'
-                },
-                data: snows,
-                pointStyle: 'star',
-                pointRadius: function (context) {
-                    let value = context.dataset.data[context.dataIndex];
-                    return value == 0 ? 3 : 6;
-                },
-                yAxisID: "y2"
-            })
+            if (this.config.showZeroSnow || maxSnow > 0) {
+                datasets.push({
+                    label: 'Snow Volume',
+                    backgroundColor: this.config.fillColor,
+                    borderColor: this.config.color,
+                    borderWidth: 1,
+                    pointBackgroundColor: this.config.color,
+                    datalabels: {
+                        color: this.config.color,
+                        display: this.config.showRain ? false : true,
+                        align: 'top'
+                    },
+                    data: snows,
+                    pointStyle: 'star',
+                    pointRadius: function (context) {
+                        let value = context.dataset.data[context.dataIndex];
+                        return value == 0 ? 3 : 6;
+                    },
+                    yAxisID: "y2"
+                })
+            }
         };
 
         // Set Y-Axis range not to overlap each other
@@ -348,7 +354,9 @@ Module.register("MMM-WeatherChart", {
             ) * 2.8,
             y2_min = 0;
         if (this.config.showRain || this.config.showSnow) {
-            y1_min = y1_min - (maxTemp - minTemp);
+            if ((this.config.showZeroRain || maxRain > 0) || (this.config.showZeroSnow || maxSnow > 0)) {
+                y1_min = y1_min - (maxTemp - minTemp);
+            }
         };
         const ranges = {
             "y1": {
@@ -467,40 +475,44 @@ Module.register("MMM-WeatherChart", {
             })
         };
         if (this.config.showRain) {
-            datasets.push({
-                label: 'Rain Volume',
-                backgroundColor: this.config.fillColor,
-                borderColor: this.config.color,
-                borderWidth: 1,
-                pointBackgroundColor: this.config.color,
-                datalabels: {
-                    color: this.config.color,
-                    align: 'top'
-                },
-                data: rains,
-                yAxisID: "y2"
-            })
+            if (this.config.showZeroRain || maxRain > 0) {
+                datasets.push({
+                    label: 'Rain Volume',
+                    backgroundColor: this.config.fillColor,
+                    borderColor: this.config.color,
+                    borderWidth: 1,
+                    pointBackgroundColor: this.config.color,
+                    datalabels: {
+                        color: this.config.color,
+                        align: 'top'
+                    },
+                    data: rains,
+                    yAxisID: "y2"
+                })
+            }
         };
         if (this.config.showSnow) {
-            datasets.push({
-                label: 'Snow Volume',
-                backgroundColor: this.config.fillColor,
-                borderColor: this.config.color,
-                borderWidth: 1,
-                pointBackgroundColor: this.config.color,
-                datalabels: {
-                    color: this.config.color,
-                    display: this.config.showRain ? false : true,
-                    align: 'top'
-                },
-                data: snows,
-                pointStyle: 'star',
-                pointRadius: function (context) {
-                    let value = context.dataset.data[context.dataIndex];
-                    return value == 0 ? 3 : 6;
-                },
-                yAxisID: "y2"
-            })
+            if (this.config.showZeroSnow || maxSnow > 0) {
+                datasets.push({
+                    label: 'Snow Volume',
+                    backgroundColor: this.config.fillColor,
+                    borderColor: this.config.color,
+                    borderWidth: 1,
+                    pointBackgroundColor: this.config.color,
+                    datalabels: {
+                        color: this.config.color,
+                        display: this.config.showRain ? false : true,
+                        align: 'top'
+                    },
+                    data: snows,
+                    pointStyle: 'star',
+                    pointRadius: function (context) {
+                        let value = context.dataset.data[context.dataIndex];
+                        return value == 0 ? 3 : 6;
+                    },
+                    yAxisID: "y2"
+                })
+            }
         };
 
         // Set Y-Axis range not to overlap each other
@@ -511,7 +523,9 @@ Module.register("MMM-WeatherChart", {
             ) * 3.2,
             y2_min = 0;
         if (this.config.showRain || this.config.showSnow) {
-            y1_min = y1_min - (maxValue - minValue);
+            if ((this.config.showZeroRain || maxRain > 0) || (this.config.showZeroSnow || maxSnow > 0)) {
+                y1_min = y1_min - (maxValue - minValue);
+            }
         };
         const ranges = {
             "y1": {
