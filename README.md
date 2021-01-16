@@ -38,6 +38,10 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
                 "lat": 35.571337,
                 "lon": 139.633989,
                 "units": "metric",
+                "showRain": true,
+                "includeSnow": true,
+                "showSnow": true,
+                "showIcon": true
             }
         }
    ]
