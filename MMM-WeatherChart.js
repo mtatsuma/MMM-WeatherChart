@@ -42,6 +42,10 @@ Module.register("MMM-WeatherChart", {
         showSnow: false,
         showZeroSnow: true,
         color: 'rgba(255, 255, 255, 1)',
+        colorMin: 'rgba(255, 255, 255, 1)',
+        colorMax: 'rgba(255, 255, 255, 1)',
+        colorRain: 'rgba(255, 255, 255, 1)',
+        colorSnow: 'rgba(255, 255, 255, 1)',
         backgroundColor: 'rgba(0, 0, 0, 0)',
         fillColor: 'rgba(255, 255, 255, 0.1)',
         dailyLabel: 'date',
@@ -118,17 +122,8 @@ Module.register("MMM-WeatherChart", {
         return params;
     },
 
-    getDayString: function (num) {
-        let dayString = [];
-        dayString.push('Su.');
-        dayString.push('Mo.');
-        dayString.push('Tu.');
-        dayString.push('We.');
-        dayString.push('Th.');
-        dayString.push('Fr.');
-        dayString.push('Sa.');
-
-        return dayString[num];
+    getDayString: function (dateTime) {
+        return dateTime.toLocaleString(moment.locale(), {weekday: 'short'}).substring(0, 2);
     },
 
     getHourString: function (hour) {
@@ -390,9 +385,9 @@ Module.register("MMM-WeatherChart", {
             if (this.config.dailyLabel == "date") {
                 labels.push(dateTime.getDate());
             } else if (this.config.dailyLabel == "days_of_week") {
-                labels.push(this.getDayString(dateTime.getDay()))
+                labels.push(this.getDayString(dateTime))
             } else if (this.config.dailyLabel == "date+days_of_week") {
-                labels.push(this.getDayString(dateTime.getDay()) + ' ' + dateTime.getDate())
+                labels.push(this.getDayString(dateTime) + ' ' + dateTime.getDate())
             }
             maxTemps.push(Math.round(data[i].temp.max * 10) / 10);
             minTemps.push(Math.round(data[i].temp.min * 10) / 10);
@@ -440,8 +435,8 @@ Module.register("MMM-WeatherChart", {
         datasets.push({
             label: 'Minimum Temparature',
             backgroundColor: this.config.backgroundColor,
-            borderColor: this.config.color,
-            pointBackgroundColor: this.config.color,
+            borderColor: this.config.colorMin,
+            pointBackgroundColor: this.config.colorMin,
             datalabels: {
                 color: this.config.color,
                 align: 'bottom'
@@ -452,8 +447,8 @@ Module.register("MMM-WeatherChart", {
         datasets.push({
             label: 'Maximum Temparature',
             backgroundColor: this.config.backgroundColor,
-            borderColor: this.config.color,
-            pointBackgroundColor: this.config.color,
+            borderColor: this.config.colorMax,
+            pointBackgroundColor: this.config.colorMax,
             datalabels: {
                 color: this.config.color,
                 align: 'top'
@@ -479,9 +474,9 @@ Module.register("MMM-WeatherChart", {
                 datasets.push({
                     label: 'Rain Volume',
                     backgroundColor: this.config.fillColor,
-                    borderColor: this.config.color,
+                    borderColor: this.config.colorRain,
                     borderWidth: 1,
-                    pointBackgroundColor: this.config.color,
+                    pointBackgroundColor: this.config.colorRain,
                     datalabels: {
                         color: this.config.color,
                         align: 'top'
@@ -496,9 +491,9 @@ Module.register("MMM-WeatherChart", {
                 datasets.push({
                     label: 'Snow Volume',
                     backgroundColor: this.config.fillColor,
-                    borderColor: this.config.color,
+                    borderColor: this.config.colorSnow,
                     borderWidth: 1,
-                    pointBackgroundColor: this.config.color,
+                    pointBackgroundColor: this.config.colorSnow,
                     datalabels: {
                         color: this.config.color,
                         display: this.config.showRain ? false : true,
