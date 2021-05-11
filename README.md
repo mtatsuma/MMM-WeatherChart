@@ -82,6 +82,10 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | showSnow | | `false` | Show snow volume line in the rain volume chart. If you enable both of showRain and showSnow, datalabels for snow volume is not appeared because those can overlap with the rain volume datalabels. |
 | showZeroSnow | | `true` | Show snow chart even when there is no snow volume. This option is effective only when `showSnow` is true. |
 | color | | `rgba(255, 255, 255, 1)` | Color of line and letters |
+| colorMin | | `rgba(255, 255, 255, 1)` | Color of the minimum temperature line e.g. yellow |
+| colorMax | | `rgba(255, 255, 255, 1)` | Color of the maximum temperature line e.g. orange |
+| colorRain | | `rgba(255, 255, 255, 1)` | Color of the rain line e.g. blue |
+| colorSnow | | `rgba(255, 255, 255, 1)` | Color of the snow line |
 | backgroundColor | | `rgba(0, 0, 0, 0)` | Color of background |
 | fillColor | | `rgba(255, 255, 255, 0.1)` | Color for filling rain volume line |
 | dailyLabel | | `date` | Label of x-axis for the daily forecast chart. The available labels are `date` or `days_of_week` or `date+days_of_week` |
