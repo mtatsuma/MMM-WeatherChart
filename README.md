@@ -18,12 +18,13 @@ Clone this repository and place it on MagicMirror module directory.
 
 ```
 $ cd ~/MagicMirror/modules
-$ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
+$ git clone -b v2.6.0 https://github.com/mtatsuma/MMM-WeatherChart.git
 ```
 
 ## Configuration
 
 ### Configuration Example
+
 ```
    modules: [
         {
@@ -60,11 +61,12 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | lat | yes | | latitude of the place you want to get weather information |
 | lon | yes | | longitude of the place you want to get weather information |
 | units | | `standard` | Units of measurement documented in [OpenWeather API document](https://openweathermap.org/api/one-call-api). `standard`, `metric` and `imperial` units are available. |
-| chartjsVersion | | `2.9.3` | Version of [Chart.js](https://www.chartjs.org/) |
-| chartjsDatalablesVersion | | `0.7.0` | Version of Chart.js [Datalabels plugin](https://github.com/chartjs/chartjs-plugin-datalabels) |
+| chartjsVersion | | `3.2.1` | Version of [Chart.js](https://www.chartjs.org/) |
+| chartjsDatalablesVersion | | `2.0.0-rc.1` | Version of Chart.js [Datalabels plugin](https://github.com/chartjs/chartjs-plugin-datalabels) |
 | height | | `300px` | Height of the chart area |
 | width | | `500px` | Width of the chart area |
 | fontSize | | `16` | Font size of characters in the chart |
+| fontWeight | | `normal` | Font weight of characters in the chart. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight for checking available values. |
 | timeOffsetHours | | `0` | Offset in hours. This is used when your timezone is different from the timezone set in MagicMirror server. |
 | title | | `Weather Forecast` | Title of the chart to display |
 | iconURLBase | | `https://openweathermap.org/img/wn/` | Base URL to get weather icons. By default, icons provided from OpenWeather is used. If you want to use your own icons, you must prepare icon image files whose name is the `<icon ID>.png`. The icon ID is documented in [Weather conditions](https://openweathermap.org/weather-conditions#How-to-get-icon-URL) |
@@ -72,8 +74,6 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | dataNum | | `24` | Number of data to display. When you set this value as larger than the maximum number of data returned from [OpenWeather API](https://openweathermap.org/api/one-call-api), the number of data is automatically set as the maximum number of data from [OpenWeather API document](https://openweathermap.org/api/one-call-api) API. |
 | nightBorderDash | | `[5, 1]` | Style of dash line for nighttime (`[<line length>, <blank length>]`). This option is available only for `hourly` data type. |
 | showIcon | | `false` | Show weather Icon on the top |
-| iconWidth | | `50` | Icon image width. `50` is the original width of OpenWeather official icon image. |
-| iconHeight | | `50` | Icon image height. `50` is the original height of OpenWeather official icon image. |
 | showRain | | `false` | Show rain volume on the bottom |
 | showZeroRain | | `true` | Show rain chart even when there is no rain volume. This option is effective only when `showRain` is true. |
 | rainUnit | | `mm` | Unit of rain volume (`mm` or `inch`). For `mm` unit, the value is rounded to the first decimal place. For `inch` unit, the value is rounded to the second decimal place. |
@@ -90,3 +90,5 @@ $ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 | fillColor | | `rgba(255, 255, 255, 0.1)` | Color for filling rain volume line |
 | dailyLabel | | `date` | Label of x-axis for the daily forecast chart. The available labels are `date` or `days_of_week` or `date+days_of_week` |
 | hourFormat | | `24h` | Hour label format for hourly forecast charts (`24h` or `12h`). If it's `24h`, the format is [0, 1, 2, ..., 22, 23]. If it's `12h`, the format is [12am, 1am, 2am, ..., 10pm, 11pm]. |
+| curveTension | | `0.4` | Tension of line chart in Chart.js. See https://www.chartjs.org/docs/latest/charts/line.html#line-styling for details. |
+| datalabelsDisplay | | `auto` | Visibility of data labels. See https://chartjs-plugin-datalabels.netlify.app/guide/positioning.html#visibility for details. 
