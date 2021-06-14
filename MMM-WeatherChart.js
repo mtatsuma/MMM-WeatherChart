@@ -3,7 +3,7 @@
  *
  * By Tatsuma Matsuki
  * MIT Licensed.
- * Some code is borrowed from 
+ * Some code is borrowed from
  * https://github.com/roramirez/MagicMirror-Module-Template
  * https://github.com/sathyarajv/MMM-OpenmapWeather
  */
@@ -20,11 +20,12 @@ Module.register("MMM-WeatherChart", {
         lon: "",
         units: "standard",
         lang: "en",
-        chartjsVersion: "2.9.3",
-        chartjsDatalablesVersion: "0.7.0",
+        chartjsVersion: "3.2.1",
+        chartjsDatalabelsVersion: "2.0.0-rc.1",
         height: "300px",
         width: "500px",
         fontSize: 16,
+        fontWeight: "normal",
         dataNum: 24,
         timeOffsetHours: 0,
         title: "Weather Forecast",
@@ -32,8 +33,6 @@ Module.register("MMM-WeatherChart", {
         dataType: "hourly",
         nightBorderDash: [5, 1],
         showIcon: false,
-        iconHeight: 50,
-        iconWidth: 50,
         showRain: false,
         showZeroRain: true,
         rainUnit: "mm",
@@ -41,18 +40,20 @@ Module.register("MMM-WeatherChart", {
         includeSnow: false,
         showSnow: false,
         showZeroSnow: true,
-        color: 'rgba(255, 255, 255, 1)',
-        colorMin: 'rgba(255, 255, 255, 1)',
-        colorMax: 'rgba(255, 255, 255, 1)',
-        colorRain: 'rgba(255, 255, 255, 1)',
-        colorSnow: 'rgba(255, 255, 255, 1)',
-        backgroundColor: 'rgba(0, 0, 0, 0)',
-        fillColor: 'rgba(255, 255, 255, 0.1)',
-        dailyLabel: 'date',
-        hourFormat: "24h"
+        color: "rgba(255, 255, 255, 1)",
+        colorMin: "rgba(255, 255, 255, 1)",
+        colorMax: "rgba(255, 255, 255, 1)",
+        colorRain: "rgba(255, 255, 255, 1)",
+        colorSnow: "rgba(255, 255, 255, 1)",
+        backgroundColor: "rgba(0, 0, 0, 0)",
+        fillColor: "rgba(255, 255, 255, 0.1)",
+        dailyLabel: "date",
+        hourFormat: "24h",
+        curveTension: 0.4,
+        datalabelsDisplay: "auto",
     },
 
-    requiresVersion: "2.12.0",
+    requiresVersion: "2.15.0",
 
     start: function () {
         var self = this;
@@ -87,7 +88,12 @@ Module.register("MMM-WeatherChart", {
             return;
         }
 
-        var url = this.config.apiBase + this.config.apiVersion + "/" + this.config.apiEndpoint + this.getParams();
+        var url =
+            this.config.apiBase +
+            this.config.apiVersion +
+            "/" +
+            this.config.apiEndpoint +
+            this.getParams();
         var retry = true;
 
         fetch(url)
@@ -104,10 +110,10 @@ Module.register("MMM-WeatherChart", {
                 self.processData(json);
             })
             .catch((msg) => {
-                Log.error(msg)
-            })
+                Log.error(msg);
+            });
         if (retry) {
-            self.scheduleUpdate((self.loaded) ? -1 : self.config.retryDelay);
+            self.scheduleUpdate(self.loaded ? -1 : self.config.retryDelay);
         }
     },
 
@@ -123,18 +129,20 @@ Module.register("MMM-WeatherChart", {
     },
 
     getDayString: function (dateTime) {
-        return dateTime.toLocaleString(moment.locale(), {weekday: 'short'}).substring(0, 2);
+        return dateTime
+            .toLocaleString(moment.locale(), { weekday: "short" })
+            .substring(0, 2);
     },
 
     getHourString: function (hour) {
         if (this.config.hourFormat == "12h") {
-            let ampm = hour < 12 ? 'am' : 'pm';
+            let ampm = hour < 12 ? "am" : "pm";
             let h = hour % 12;
             h = h ? h : 12;
             return `${h}${ampm}`;
         } else {
             return hour;
-        };
+        }
     },
 
     formatRain: function (rain) {
@@ -142,23 +150,48 @@ Module.register("MMM-WeatherChart", {
             return Math.round((rain / 25.4) * 100) / 100;
         } else {
             return Math.round(rain * 10) / 10;
-        };
+        }
     },
 
     getIconImage: function (iconId, callback) {
         let self = this;
-        let iconCanvas = document.createElement('canvas');
-        let iconContext = iconCanvas.getContext('2d');
         let iconImage = new Image();
-        iconImage.onload = function () {
-            iconImage.width = self.config.iconWidth;
-            iconImage.height = self.config.iconHeight;
-            iconCanvas.width = iconImage.width;
-            iconCanvas.height = iconImage.height;
-            iconContext.drawImage(iconImage, 0, 0, iconImage.width, iconImage.height);
-            callback(iconCanvas);
-        };
-        iconImage.src = this.config.iconURLBase + iconId + ".png";
+        if (iconId) {
+            iconImage.src = this.config.iconURLBase + iconId + ".png";
+        }
+        return iconImage;
+    },
+
+    // Get min value from arrays including NaN value
+    getMin: function (array) {
+        let min;
+        for (let i = 0, l = array.length; i < l; i++) {
+            let n = array[i];
+            if (!isNaN(n)) {
+                if (min) {
+                    min = Math.min(min, n);
+                } else {
+                    min = n;
+                }
+            }
+        }
+        return min;
+    },
+
+    // Get max value from arrays including NaN value
+    getMax: function (array) {
+        let max;
+        for (let i = 0, l = array.length; i < l; i++) {
+            let n = array[i];
+            if (!isNaN(n)) {
+                if (max) {
+                    max = Math.max(max, n);
+                } else {
+                    max = n;
+                }
+            }
+        }
+        return max;
     },
 
     /* scheduleUpdate()
@@ -180,14 +213,18 @@ Module.register("MMM-WeatherChart", {
     },
 
     getHourlyDataset: function () {
-        const data = this.weatherdata.hourly,
-            temps = [],
-            rains = [],
-            snows = [],
-            dayTemps = [],
-            nightTemps = [],
-            labels = [],
-            iconIDs = [];
+        const data = this.weatherdata.hourly;
+
+        // Add dummy data to make space on the left and right side of the chart
+        // otherwise the icon images are cut off by y-Axes.
+        const temps = [NaN],
+            rains = [NaN],
+            snows = [NaN],
+            dayTemps = [NaN],
+            nightTemps = [NaN],
+            labels = [""],
+            iconIDs = [NaN];
+
         data.sort(function (a, b) {
             if (a.dt < b.dt) return -1;
             if (a.dt > b.dt) return 1;
@@ -195,12 +232,14 @@ Module.register("MMM-WeatherChart", {
         });
         let dayTime;
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
-            let dateTime = new Date(data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000);
+            let dateTime = new Date(
+                data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
+            );
             let iconID = data[i].weather[0].icon;
             let temp = Math.round(data[i].temp * 10) / 10;
             if (i === 0) {
-                dayTime = Boolean(iconID.match(/d$/))
-            };
+                dayTime = Boolean(iconID.match(/d$/));
+            }
             labels.push(this.getHourString(dateTime.getHours()));
             if (iconID.match(/d$/)) {
                 dayTemps.push(temp);
@@ -210,20 +249,22 @@ Module.register("MMM-WeatherChart", {
                     nightTemps.push(NaN);
                 }
                 dayTime = true;
-            };
+            }
             if (iconID.match(/n$/)) {
                 nightTemps.push(temp);
                 if (dayTime) {
                     dayTemps.push(temp);
                 } else {
                     dayTemps.push(NaN);
-                };
+                }
                 dayTime = false;
-            };
+            }
             temps.push(temp);
             if (data[i].rain) {
                 if (data[i].snow && this.config.includeSnow) {
-                    rains.push(this.formatRain(data[i].rain["1h"] + data[i].snow["1h"]));
+                    rains.push(
+                        this.formatRain(data[i].rain["1h"] + data[i].snow["1h"])
+                    );
                 } else {
                     rains.push(this.formatRain(data[i].rain["1h"]));
                 }
@@ -240,12 +281,22 @@ Module.register("MMM-WeatherChart", {
                 snows.push(0);
             }
             iconIDs.push(iconID);
-        };
+        }
 
-        const minTemp = temps.reduce((a, b) => Math.min(a, b)),
-            maxTemp = temps.reduce((a, b) => Math.max(a, b)),
-            maxRain = rains.reduce((a, b) => Math.max(a, b)),
-            maxSnow = snows.reduce((a, b) => Math.max(a, b)),
+        // Add dummy data to make space on the left and right side of the chart
+        // otherwise the icon images are cut off by y-Axes.
+        temps.push(NaN);
+        rains.push(NaN);
+        snows.push(NaN);
+        dayTemps.push(NaN);
+        nightTemps.push(NaN);
+        labels.push("");
+        iconIDs.push(NaN);
+
+        const minTemp = this.getMin(temps),
+            maxTemp = this.getMax(temps),
+            maxRain = this.getMax(rains),
+            maxSnow = this.getMax(snows),
             iconLine = [],
             icons = [];
 
@@ -254,73 +305,84 @@ Module.register("MMM-WeatherChart", {
             let v = maxTemp;
             if (this.config.showIcon) {
                 v = maxTemp + (maxTemp - minTemp) * 0.3;
-            };
+            }
             iconLine.push(v);
-            this.getIconImage(iconIDs[i], function (image) {
-                icons.push(image);
-            });
-        };
+            icons.push(this.getIconImage(iconIDs[i]));
+        }
 
-        const datasets = []
+        const datasets = [];
         datasets.push({
-            label: 'Day Temparature',
+            label: "Day Temparature",
             backgroundColor: this.config.backgroundColor,
             borderColor: this.config.color,
             pointBackgroundColor: this.config.color,
             datalabels: {
                 color: this.config.color,
-                align: 'top'
+                align: "top",
+                font: {
+                    weight: this.config.fontWeight,
+                },
+                display: this.config.datalabelsDisplay,
             },
             data: dayTemps,
-            yAxisID: "y1"
+            yAxisID: "y1",
         });
         datasets.push({
-            label: 'Night Temparature',
+            label: "Night Temparature",
             backgroundColor: this.config.backgroundColor,
             borderColor: this.config.color,
             pointBackgroundColor: this.config.color,
             borderDash: this.config.nightBorderDash,
             datalabels: {
                 color: this.config.color,
-                align: 'top'
+                align: "top",
+                font: {
+                    weight: this.config.fontWeight,
+                },
+                display: this.config.datalabelsDisplay,
             },
             data: nightTemps,
-            yAxisID: "y1"
+            yAxisID: "y1",
         });
         if (this.config.showIcon) {
             datasets.push({
-                label: 'Icons',
+                label: "Icons",
                 backgroundColor: this.config.backgroundColor,
                 borderColor: this.config.backgroundColor,
                 data: iconLine,
                 pointStyle: icons,
                 datalabels: {
-                    display: false
+                    display: false,
                 },
-                yAxisID: "y1"
-            })
-        };
+                yAxisID: "y1",
+            });
+        }
         if (this.config.showRain) {
             if (this.config.showZeroRain || maxRain > 0) {
                 datasets.push({
-                    label: 'Rain Volume',
+                    label: "Rain Volume",
                     backgroundColor: this.config.fillColor,
                     borderColor: this.config.color,
                     borderWidth: 1,
                     pointBackgroundColor: this.config.color,
                     datalabels: {
                         color: this.config.color,
-                        align: 'top'
+                        align: "top",
+                        font: {
+                            weight: this.config.fontWeight,
+                        },
+                        display: this.config.datalabelsDisplay,
                     },
                     data: rains,
-                    yAxisID: "y2"
-                })
+                    fill: true,
+                    yAxisID: "y2",
+                });
             }
-        };
+        }
         if (this.config.showSnow) {
             if (this.config.showZeroSnow || maxSnow > 0) {
                 datasets.push({
-                    label: 'Snow Volume',
+                    label: "Snow Volume",
                     backgroundColor: this.config.fillColor,
                     borderColor: this.config.color,
                     borderWidth: 1,
@@ -328,66 +390,83 @@ Module.register("MMM-WeatherChart", {
                     datalabels: {
                         color: this.config.color,
                         display: this.config.showRain ? false : true,
-                        align: 'top'
+                        align: "top",
+                        font: {
+                            weight: this.config.fontWeight,
+                        },
+                        display: this.config.datalabelsDisplay,
                     },
                     data: snows,
-                    pointStyle: 'star',
+                    fill: true,
+                    pointStyle: "star",
                     pointRadius: function (context) {
                         let value = context.dataset.data[context.dataIndex];
                         return value == 0 ? 3 : 6;
                     },
-                    yAxisID: "y2"
-                })
+                    yAxisID: "y2",
+                });
             }
-        };
+        }
 
         // Set Y-Axis range not to overlap each other
         let y1_max = iconLine[0] + (maxTemp - minTemp) * 0.1,
             y1_min = minTemp - (maxTemp - minTemp) * 0.2,
-            y2_max = Math.max(
-                maxRain, maxSnow, this.config.rainMinHeight
-            ) * 2.8,
+            y2_max =
+                Math.max(maxRain, maxSnow, this.config.rainMinHeight) * 2.8,
             y2_min = 0;
         if (this.config.showRain || this.config.showSnow) {
-            if ((this.config.showZeroRain || maxRain > 0) || (this.config.showZeroSnow || maxSnow > 0)) {
+            if (
+                this.config.showZeroRain ||
+                maxRain > 0 ||
+                this.config.showZeroSnow ||
+                maxSnow > 0
+            ) {
                 y1_min = y1_min - (maxTemp - minTemp);
             }
-        };
+        }
         const ranges = {
-            "y1": {
-                "min": y1_min,
-                "max": y1_max
+            y1: {
+                min: y1_min,
+                max: y1_max,
             },
-            "y2": {
-                "min": y2_min,
-                "max": y2_max
-            }
+            y2: {
+                min: y2_min,
+                max: y2_max,
+            },
         };
 
         return { labels: labels, datasets: datasets, ranges: ranges };
     },
 
     getDailyDataset: function () {
-        const data = this.weatherdata.daily,
-            maxTemps = [],
-            minTemps = [],
-            rains = [],
-            snows = [],
-            labels = [],
-            iconIDs = [];
+        const data = this.weatherdata.daily;
+
+        // Add dummy data to make space on the left and right side of the chart
+        // otherwise the icon images are cut off by y-Axes.
+        const maxTemps = [NaN],
+            minTemps = [NaN],
+            rains = [NaN],
+            snows = [NaN],
+            labels = [""],
+            iconIDs = [NaN];
+
         data.sort(function (a, b) {
             if (a.dt < b.dt) return -1;
             if (a.dt > b.dt) return 1;
             return 0;
         });
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
-            const dateTime = new Date(data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000)
+            const dateTime = new Date(
+                data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
+            );
             if (this.config.dailyLabel == "date") {
                 labels.push(dateTime.getDate());
             } else if (this.config.dailyLabel == "days_of_week") {
-                labels.push(this.getDayString(dateTime))
+                labels.push(this.getDayString(dateTime));
             } else if (this.config.dailyLabel == "date+days_of_week") {
-                labels.push(this.getDayString(dateTime) + ' ' + dateTime.getDate())
+                labels.push(
+                    this.getDayString(dateTime) + " " + dateTime.getDate()
+                );
             }
             maxTemps.push(Math.round(data[i].temp.max * 10) / 10);
             minTemps.push(Math.round(data[i].temp.min * 10) / 10);
@@ -410,12 +489,21 @@ Module.register("MMM-WeatherChart", {
                 snows.push(0);
             }
             iconIDs.push(data[i].weather[0].icon);
-        };
+        }
 
-        const minValue = minTemps.reduce((a, b) => Math.min(a, b)),
-            maxValue = maxTemps.reduce((a, b) => Math.max(a, b)),
-            maxRain = rains.reduce((a, b) => Math.max(a, b)),
-            maxSnow = snows.reduce((a, b) => Math.max(a, b)),
+        // Add dummy data to make space on the left and right side of the chart
+        // otherwise the icon images are cut off by y-Axes.
+        maxTemps.push(NaN);
+        minTemps.push(NaN);
+        rains.push(NaN);
+        snows.push(NaN);
+        labels.push("");
+        iconIDs.push(NaN);
+
+        const minValue = this.getMin(minTemps),
+            maxValue = this.getMax(maxTemps),
+            maxRain = this.getMax(rains),
+            maxSnow = this.getMax(snows),
             iconLine = [],
             icons = [];
 
@@ -426,70 +514,81 @@ Module.register("MMM-WeatherChart", {
                 v = maxValue + (maxValue - minValue) * 0.3;
             }
             iconLine.push(v);
-            this.getIconImage(iconIDs[i], function (image) {
-                icons.push(image);
-            });
-        };
+            icons.push(this.getIconImage(iconIDs[i]));
+        }
 
-        const datasets = []
+        const datasets = [];
         datasets.push({
-            label: 'Minimum Temparature',
+            label: "Minimum Temparature",
             backgroundColor: this.config.backgroundColor,
             borderColor: this.config.colorMin,
             pointBackgroundColor: this.config.colorMin,
             datalabels: {
                 color: this.config.color,
-                align: 'bottom'
+                align: "bottom",
+                font: {
+                    weight: this.config.fontWeight,
+                },
+                display: this.config.datalabelsDisplay,
             },
             data: minTemps,
-            yAxisID: "y1"
+            yAxisID: "y1",
         });
         datasets.push({
-            label: 'Maximum Temparature',
+            label: "Maximum Temparature",
             backgroundColor: this.config.backgroundColor,
             borderColor: this.config.colorMax,
             pointBackgroundColor: this.config.colorMax,
             datalabels: {
                 color: this.config.color,
-                align: 'top'
+                align: "top",
+                font: {
+                    weight: this.config.fontWeight,
+                },
+                display: this.config.datalabelsDisplay,
             },
             data: maxTemps,
-            yAxisID: "y1"
+            yAxisID: "y1",
         });
         if (this.config.showIcon) {
             datasets.push({
-                label: 'Icons',
+                label: "Icons",
                 backgroundColor: this.config.backgroundColor,
                 borderColor: this.config.backgroundColor,
                 data: iconLine,
                 pointStyle: icons,
                 datalabels: {
-                    display: false
+                    display: false,
                 },
-                yAxisID: "y1"
-            })
-        };
+                yAxisID: "y1",
+            });
+        }
         if (this.config.showRain) {
             if (this.config.showZeroRain || maxRain > 0) {
                 datasets.push({
-                    label: 'Rain Volume',
+                    label: "Rain Volume",
                     backgroundColor: this.config.fillColor,
                     borderColor: this.config.colorRain,
                     borderWidth: 1,
                     pointBackgroundColor: this.config.colorRain,
                     datalabels: {
                         color: this.config.color,
-                        align: 'top'
+                        align: "top",
+                        font: {
+                            weight: this.config.fontWeight,
+                        },
+                        display: this.config.datalabelsDisplay,
                     },
                     data: rains,
-                    yAxisID: "y2"
-                })
+                    fill: true,
+                    yAxisID: "y2",
+                });
             }
-        };
+        }
         if (this.config.showSnow) {
             if (this.config.showZeroSnow || maxSnow > 0) {
                 datasets.push({
-                    label: 'Snow Volume',
+                    label: "Snow Volume",
                     backgroundColor: this.config.fillColor,
                     borderColor: this.config.colorSnow,
                     borderWidth: 1,
@@ -497,43 +596,52 @@ Module.register("MMM-WeatherChart", {
                     datalabels: {
                         color: this.config.color,
                         display: this.config.showRain ? false : true,
-                        align: 'top'
+                        align: "top",
+                        font: {
+                            weight: this.config.fontWeight,
+                        },
+                        display: this.config.datalabelsDisplay,
                     },
                     data: snows,
-                    pointStyle: 'star',
+                    fill: true,
+                    pointStyle: "star",
                     pointRadius: function (context) {
                         let value = context.dataset.data[context.dataIndex];
                         return value == 0 ? 3 : 6;
                     },
-                    yAxisID: "y2"
-                })
+                    yAxisID: "y2",
+                });
             }
-        };
+        }
 
         // Set Y-Axis range not to overlap each other
         let y1_max = iconLine[0] + (maxValue - minValue) * 0.1,
             y1_min = minValue - (maxValue - minValue) * 0.2,
-            y2_max = Math.max(
-                maxRain, maxSnow, this.config.rainMinHeight
-            ) * 3.2,
+            y2_max =
+                Math.max(maxRain, maxSnow, this.config.rainMinHeight) * 3.2,
             y2_min = 0;
         if (this.config.showRain || this.config.showSnow) {
-            if ((this.config.showZeroRain || maxRain > 0) || (this.config.showZeroSnow || maxSnow > 0)) {
+            if (
+                this.config.showZeroRain ||
+                maxRain > 0 ||
+                this.config.showZeroSnow ||
+                maxSnow > 0
+            ) {
                 y1_min = y1_min - (maxValue - minValue);
             }
-        };
+        }
         const ranges = {
-            "y1": {
-                "min": y1_min,
-                "max": y1_max
+            y1: {
+                min: y1_min,
+                max: y1_max,
             },
-            "y2": {
-                "min": y2_min,
-                "max": y2_max
-            }
+            y2: {
+                min: y2_min,
+                max: y2_max,
+            },
         };
 
-        return { labels: labels, datasets: datasets, ranges: ranges }
+        return { labels: labels, datasets: datasets, ranges: ranges };
     },
 
     getDom: function () {
@@ -542,11 +650,15 @@ Module.register("MMM-WeatherChart", {
         const wrapper = document.createElement("div");
         wrapper.setAttribute(
             "style",
-            "height: " + this.config.height + "; width: " + this.config.width + ";"
+            "height: " +
+                this.config.height +
+                "; width: " +
+                this.config.width +
+                ";"
         );
         if (this.weatherdata) {
             const wrapperCanvas = document.createElement("canvas"),
-                ctx = wrapperCanvas.getContext('2d');
+                ctx = wrapperCanvas.getContext("2d");
 
             let dataset;
             if (this.config.dataType === "hourly") {
@@ -555,52 +667,41 @@ Module.register("MMM-WeatherChart", {
                 dataset = this.getDailyDataset();
             }
 
-            Chart.defaults.global.defaultFontSize = this.config.fontSize
-            Chart.defaults.global.defaultColor = this.config.color
+            Chart.defaults.font.size = this.config.fontSize;
+            Chart.defaults.font.weight = this.config.fontWeight;
+            Chart.defaults.color = this.config.color;
+            Chart.register(ChartDataLabels);
             this.chart = new Chart(ctx, {
-                type: 'line',
+                type: "line",
                 data: {
                     labels: dataset.labels,
-                    datasets: dataset.datasets
+                    datasets: dataset.datasets,
                 },
                 options: {
                     maintainAspectRatio: false,
+                    tension: this.config.curveTension,
                     title: {
                         display: true,
-                        text: this.config.title
+                        text: this.config.title,
                     },
-                    legend: {
-                        display: false
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
                     },
                     scales: {
-                        yAxes: [
-                            {
-                                id: "y1",
-                                position: "left",
-                                display: false,
-                                ticks: {
-                                    min: dataset.ranges.y1.min,
-                                    max: dataset.ranges.y1.max
-                                }
-                            },
-                            {
-                                id: "y2",
-                                position: "right",
-                                display: false,
-                                ticks: {
-                                    min: dataset.ranges.y2.min,
-                                    max: dataset.ranges.y2.max
-                                }
-                            }
-                        ]
+                        y1: {
+                            display: false,
+                            min: dataset.ranges.y1.min,
+                            max: dataset.ranges.y1.max,
+                        },
+                        y2: {
+                            display: false,
+                            min: dataset.ranges.y2.min,
+                            max: dataset.ranges.y2.max,
+                        },
                     },
-                    layout: {
-                        padding: {
-                            left: 20,
-                            right: 20
-                        }
-                    }
-                }
+                },
             });
             wrapper.appendChild(wrapperCanvas);
         }
@@ -609,7 +710,8 @@ Module.register("MMM-WeatherChart", {
         if (this.dataNotification) {
             var wrapperDataNotification = document.createElement("div");
             // translations  + datanotification
-            wrapperDataNotification.innerHTML = "Updated at " + this.dataNotification.date;
+            wrapperDataNotification.innerHTML =
+                "Updated at " + this.dataNotification.date;
 
             wrapper.appendChild(wrapperDataNotification);
         }
@@ -618,9 +720,18 @@ Module.register("MMM-WeatherChart", {
 
     getScripts: function () {
         // Load chart.js from CDN
+        let chartjsFileName = "chart.min.js";
+        if (Number(this.config.chartjsVersion.split(".")[0]) < 3) {
+            chartjsFileName = "Chart.min.js";
+        }
         return [
-            "https://cdn.jsdelivr.net/npm/chart.js@" + this.config.chartjsVersion + "/dist/Chart.min.js",
-            "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@" + this.config.chartjsDatalablesVersion + "/dist/chartjs-plugin-datalabels.min.js"
+            "https://cdn.jsdelivr.net/npm/chart.js@" +
+                this.config.chartjsVersion +
+                "/dist/" +
+                chartjsFileName,
+            "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@" +
+                this.config.chartjsDatalabelsVersion +
+                "/dist/chartjs-plugin-datalabels.min.js",
         ];
     },
 
@@ -635,7 +746,9 @@ Module.register("MMM-WeatherChart", {
     processData: function (data) {
         var self = this;
         this.weatherdata = data;
-        if (this.loaded === false) { self.updateDom(self.config.animationSpeed); }
+        if (this.loaded === false) {
+            self.updateDom(self.config.animationSpeed);
+        }
         this.loaded = true;
 
         // the data if load
