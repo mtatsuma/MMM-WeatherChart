@@ -213,6 +213,7 @@ Module.register("MMM-WeatherChart", {
     },
 
     getHourlyDataset: function () {
+        const self = this;
         const data = this.weatherdata.hourly;
 
         // Add dummy data to make space on the left and right side of the chart
@@ -372,6 +373,11 @@ Module.register("MMM-WeatherChart", {
                             weight: this.config.fontWeight,
                         },
                         display: this.config.datalabelsDisplay,
+                        formatter: function (value, context) {
+                            return self.config.showZeroRain || value > 0
+                                ? value
+                                : "";
+                        },
                     },
                     data: rains,
                     fill: true,
@@ -395,6 +401,11 @@ Module.register("MMM-WeatherChart", {
                             weight: this.config.fontWeight,
                         },
                         display: this.config.datalabelsDisplay,
+                        formatter: function (value, context) {
+                            return self.config.showZeroSnow || value > 0
+                                ? value
+                                : "";
+                        },
                     },
                     data: snows,
                     fill: true,
@@ -578,6 +589,11 @@ Module.register("MMM-WeatherChart", {
                             weight: this.config.fontWeight,
                         },
                         display: this.config.datalabelsDisplay,
+                        formatter: function (value, context) {
+                            return self.config.showZeroRain || value > 0
+                                ? value
+                                : "";
+                        },
                     },
                     data: rains,
                     fill: true,
@@ -601,6 +617,11 @@ Module.register("MMM-WeatherChart", {
                             weight: this.config.fontWeight,
                         },
                         display: this.config.datalabelsDisplay,
+                        formatter: function (value, context) {
+                            return self.config.showZeroSnow || value > 0
+                                ? value
+                                : "";
+                        },
                     },
                     data: snows,
                     fill: true,
