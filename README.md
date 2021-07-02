@@ -18,7 +18,7 @@ Clone this repository and place it on MagicMirror module directory.
 
 ```
 $ cd ~/MagicMirror/modules
-$ git clone -b v2.6.0 https://github.com/mtatsuma/MMM-WeatherChart.git
+$ git clone -b v3.0.0 https://github.com/mtatsuma/MMM-WeatherChart.git
 ```
 
 ## Configuration
@@ -61,8 +61,8 @@ $ git clone -b v2.6.0 https://github.com/mtatsuma/MMM-WeatherChart.git
 | lat | yes | | latitude of the place you want to get weather information |
 | lon | yes | | longitude of the place you want to get weather information |
 | units | | `standard` | Units of measurement documented in [OpenWeather API document](https://openweathermap.org/api/one-call-api). `standard`, `metric` and `imperial` units are available. |
-| chartjsVersion | | `3.2.1` | Version of [Chart.js](https://www.chartjs.org/) |
-| chartjsDatalabelsVersion | | `2.0.0-rc.1` | Version of Chart.js [Datalabels plugin](https://github.com/chartjs/chartjs-plugin-datalabels) |
+| chartjsVersion | | `3.4.0` | Version of [Chart.js](https://www.chartjs.org/) |
+| chartjsDatalabelsVersion | | `2.0.0` | Version of Chart.js [Datalabels plugin](https://github.com/chartjs/chartjs-plugin-datalabels) |
 | height | | `300px` | Height of the chart area |
 | width | | `500px` | Width of the chart area |
 | fontSize | | `16` | Font size of characters in the chart |
