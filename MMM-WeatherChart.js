@@ -303,7 +303,7 @@ Module.register("MMM-WeatherChart", {
 
         // Create dummy line for icons
         for (let i = 0; i < temps.length; i++) {
-            v = maxTemp + (maxTemp - minTemp) * 0.3;
+            let v = maxTemp + (maxTemp - minTemp) * 0.3;
             iconLine.push(v);
             icons.push(this.getIconImage(iconIDs[i]));
         }
@@ -517,10 +517,7 @@ Module.register("MMM-WeatherChart", {
 
         // Create dummy line for icons
         for (let i = 0; i < minTemps.length; i++) {
-            let v = maxValue;
-            if (this.config.showIcon) {
-                v = maxValue + (maxValue - minValue) * 0.3;
-            }
+            let v = maxValue + (maxValue - minValue) * 0.3;
             iconLine.push(v);
             icons.push(this.getIconImage(iconIDs[i]));
         }
