@@ -51,6 +51,7 @@ Module.register("MMM-WeatherChart", {
         hourFormat: "24h",
         curveTension: 0.4,
         datalabelsDisplay: "auto",
+        datalabelsOffset: 4,
     },
 
     requiresVersion: "2.15.0",
@@ -317,6 +318,7 @@ Module.register("MMM-WeatherChart", {
             datalabels: {
                 color: this.config.color,
                 align: "top",
+                offset: this.config.datalabelsOffset,
                 font: {
                     weight: this.config.fontWeight,
                 },
@@ -334,6 +336,7 @@ Module.register("MMM-WeatherChart", {
             datalabels: {
                 color: this.config.color,
                 align: "top",
+                offset: this.config.datalabelsOffset,
                 font: {
                     weight: this.config.fontWeight,
                 },
@@ -366,6 +369,7 @@ Module.register("MMM-WeatherChart", {
                     datalabels: {
                         color: this.config.color,
                         align: "top",
+                        offset: this.config.datalabelsOffset,
                         font: {
                             weight: this.config.fontWeight,
                         },
@@ -394,6 +398,7 @@ Module.register("MMM-WeatherChart", {
                         color: this.config.color,
                         display: this.config.showRain ? false : true,
                         align: "top",
+                        offset: this.config.datalabelsOffset,
                         font: {
                             weight: this.config.fontWeight,
                         },
@@ -531,6 +536,7 @@ Module.register("MMM-WeatherChart", {
             datalabels: {
                 color: this.config.color,
                 align: "bottom",
+                offset: this.config.datalabelsOffset,
                 font: {
                     weight: this.config.fontWeight,
                 },
@@ -547,6 +553,7 @@ Module.register("MMM-WeatherChart", {
             datalabels: {
                 color: this.config.color,
                 align: "top",
+                offset: this.config.datalabelsOffset,
                 font: {
                     weight: this.config.fontWeight,
                 },
@@ -579,6 +586,7 @@ Module.register("MMM-WeatherChart", {
                     datalabels: {
                         color: this.config.color,
                         align: "top",
+                        offset: this.config.datalabelsOffset,
                         font: {
                             weight: this.config.fontWeight,
                         },
@@ -607,6 +615,7 @@ Module.register("MMM-WeatherChart", {
                         color: this.config.color,
                         display: this.config.showRain ? false : true,
                         align: "top",
+                        offset: this.config.datalabelsOffset,
                         font: {
                             weight: this.config.fontWeight,
                         },
