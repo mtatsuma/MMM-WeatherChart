@@ -92,3 +92,4 @@ $ git clone -b v3.0.0 https://github.com/mtatsuma/MMM-WeatherChart.git
 | hourFormat | | `24h` | Hour label format for hourly forecast charts (`24h` or `12h`). If it's `24h`, the format is [0, 1, 2, ..., 22, 23]. If it's `12h`, the format is [12am, 1am, 2am, ..., 10pm, 11pm]. |
 | curveTension | | `0.4` | Tension of line chart in Chart.js. See https://www.chartjs.org/docs/latest/charts/line.html#line-styling for details. |
 | datalabelsDisplay | | `auto` | Visibility of data labels. See https://chartjs-plugin-datalabels.netlify.app/guide/positioning.html#visibility for details. 
+| datalabelsOffset | | `4` | Offset of data labels. See https://chartjs-plugin-datalabels.netlify.app/guide/positioning.html#alignment-and-offset for details.
