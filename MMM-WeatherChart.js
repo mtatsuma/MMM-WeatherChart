@@ -303,10 +303,7 @@ Module.register("MMM-WeatherChart", {
 
         // Create dummy line for icons
         for (let i = 0; i < temps.length; i++) {
-            let v = maxTemp;
-            if (this.config.showIcon) {
-                v = maxTemp + (maxTemp - minTemp) * 0.3;
-            }
+            v = maxTemp + (maxTemp - minTemp) * 0.3;
             iconLine.push(v);
             icons.push(this.getIconImage(iconIDs[i]));
         }
