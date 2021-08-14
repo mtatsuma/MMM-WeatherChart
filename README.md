@@ -18,8 +18,16 @@ Clone this repository and place it on MagicMirror module directory.
 
 ```
 $ cd ~/MagicMirror/modules
-$ git clone -b v3.0.0 https://github.com/mtatsuma/MMM-WeatherChart.git
+$ git clone https://github.com/mtatsuma/MMM-WeatherChart.git
 ```
+
+or if you want to use an old version, clone it with the version.
+```
+$ cd ~/MagicMirror/modules
+$ git clone -b <version> https://github.com/mtatsuma/MMM-WeatherChart.git
+```
+
+You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/MMM-WeatherChart/releases).
 
 ## Configuration
 
