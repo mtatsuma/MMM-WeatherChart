@@ -195,6 +195,78 @@ Module.register("MMM-WeatherChart", {
         return max;
     },
 
+    // Calculate MarginFactors from the simultanious equations
+    //
+    // x = iconSize/2 * ((1 + x + y + z)/h)
+    // y = (dataLabelOffset + fontSize + iconSize) * ((1 + x + y + z)/h)
+    // z = (dataLabelOffset * 2 + fontSize * a) * ((1 + x + y + z)/h)
+    //
+    // where
+    // x is the margin on the top of Weather icons,
+    // y is the margin on the below of Weather icons,
+    // z is the margin between temperature and rain lines,
+    // a is 2 when dataType is hourly and show rain or snow,
+    // a is 2.5 when dataType is daily and show rain or snow,
+    // a is 1 when rain or snow is not shown.
+    getTempRainMarginFactor: function (showRain = true, iconSize = 50) {
+        // Calculate z
+        const h = parseInt(this.config.height);
+        let c1 = iconSize / 2.0;
+        c1 = c1 / (h - iconSize);
+        let c2 = this.config.datalabelsOffset + this.config.fontSize + iconSize;
+        c2 = c1 + c2;
+        c2 = c2 / (h - c2);
+        let c3;
+        let a;
+        if (showRain) {
+            if (this.config.dataType == "hourly") {
+                a = 2;
+            } else {
+                a = 2.5;
+            }
+        } else {
+            a = 1;
+        }
+        c3 = this.config.datalabelsOffset * 2 + this.config.fontSize * a;
+        let z = (c3 * (1 + c1 + c2 * c1 + c2)) / (h - (c2 + c2 * c3 + c3 + 1));
+        if (z < 0) z = 0;
+        if (showRain) z = z * 2;
+        return z;
+    },
+
+    getIconBelowMarginFactor: function (
+        z = this.getTempRainMarginFactor(),
+        showRain = true,
+        iconSize = 50
+    ) {
+        // Calculate y
+        const h = parseInt(this.config.height);
+        let c1 = iconSize / 2.0;
+        c1 = c1 / (h - iconSize);
+        let c2 = this.config.datalabelsOffset + this.config.fontSize + iconSize;
+        c2 = c1 + c2;
+        c2 = c2 / (h - c2);
+        let y = c2 * (1 + z / 2.0);
+        if (y < 0) y = 0;
+        if (showRain) y = y * 2;
+        return y;
+    },
+
+    getIconTopMarginFactor: function (
+        y = this.getIconBelowMarginFactor(),
+        z = this.getTempRainMarginFactor(),
+        showRain = true,
+        iconSize = 50
+    ) {
+        // Calculate x
+        const h = parseInt(this.config.height);
+        let c1 = iconSize / 2.0;
+        c1 = c1 / (h - iconSize);
+        let x = c1 * (1 + (y + z) / 2.0);
+        if (x < 0) x = 0;
+        if (showRain) x = x * 2;
+        return x;
+    },
     /* scheduleUpdate()
      * Schedule next update.
      *
@@ -302,9 +374,31 @@ Module.register("MMM-WeatherChart", {
             iconLine = [],
             icons = [];
 
+        let showRainSnow = false;
+        if (this.config.showRain || this.config.showSnow) {
+            if (
+                this.config.showZeroRain ||
+                maxRain > 0 ||
+                this.config.showZeroSnow ||
+                maxSnow > 0
+            ) {
+                showRainSnow = true;
+            }
+        }
+        const tempRainMargin = this.getTempRainMarginFactor(showRainSnow);
+        const iconBelowMargin = this.getIconBelowMarginFactor(
+            tempRainMargin,
+            showRainSnow
+        );
+        const iconTopMargin = this.getIconTopMarginFactor(
+            iconBelowMargin,
+            tempRainMargin,
+            showRainSnow
+        );
+
         // Create dummy line for icons
         for (let i = 0; i < temps.length; i++) {
-            let v = maxTemp + (maxTemp - minTemp) * 0.3;
+            let v = maxTemp + (maxTemp - minTemp) * iconBelowMargin;
             iconLine.push(v);
             icons.push(this.getIconImage(iconIDs[i]));
         }
@@ -422,21 +516,13 @@ Module.register("MMM-WeatherChart", {
         }
 
         // Set Y-Axis range not to overlap each other
-        let y1_max = iconLine[0] + (maxTemp - minTemp) * 0.1,
-            y1_min = minTemp - (maxTemp - minTemp) * 0.2,
+        let y1_max = iconLine[0] + (maxTemp - minTemp) * iconTopMargin,
+            y1_min = minTemp - (maxTemp - minTemp) * tempRainMargin,
             y2_max =
-                Math.max(maxRain, maxSnow, this.config.rainMinHeight) * 2.8,
+                Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
+                (2 + iconTopMargin + iconBelowMargin + tempRainMargin),
             y2_min = 0;
-        if (this.config.showRain || this.config.showSnow) {
-            if (
-                this.config.showZeroRain ||
-                maxRain > 0 ||
-                this.config.showZeroSnow ||
-                maxSnow > 0
-            ) {
-                y1_min = y1_min - (maxTemp - minTemp);
-            }
-        }
+        if (showRainSnow) y1_min = y1_min - (maxTemp - minTemp);
         const ranges = {
             y1: {
                 min: y1_min,
@@ -520,9 +606,31 @@ Module.register("MMM-WeatherChart", {
             iconLine = [],
             icons = [];
 
+        let showRainSnow = false;
+        if (this.config.showRain || this.config.showSnow) {
+            if (
+                this.config.showZeroRain ||
+                maxRain > 0 ||
+                this.config.showZeroSnow ||
+                maxSnow > 0
+            ) {
+                showRainSnow = true;
+            }
+        }
+        const tempRainMargin = this.getTempRainMarginFactor(showRainSnow);
+        const iconBelowMargin = this.getIconBelowMarginFactor(
+            tempRainMargin,
+            showRainSnow
+        );
+        const iconTopMargin = this.getIconTopMarginFactor(
+            iconBelowMargin,
+            tempRainMargin,
+            showRainSnow
+        );
+
         // Create dummy line for icons
         for (let i = 0; i < minTemps.length; i++) {
-            let v = maxValue + (maxValue - minValue) * 0.3;
+            let v = maxValue + (maxValue - minValue) * iconBelowMargin;
             iconLine.push(v);
             icons.push(this.getIconImage(iconIDs[i]));
         }
@@ -639,21 +747,13 @@ Module.register("MMM-WeatherChart", {
         }
 
         // Set Y-Axis range not to overlap each other
-        let y1_max = iconLine[0] + (maxValue - minValue) * 0.1,
-            y1_min = minValue - (maxValue - minValue) * 0.2,
+        let y1_max = iconLine[0] + (maxValue - minValue) * iconTopMargin,
+            y1_min = minValue - (maxValue - minValue) * tempRainMargin,
             y2_max =
-                Math.max(maxRain, maxSnow, this.config.rainMinHeight) * 3.2,
+                Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
+                (2 + (iconTopMargin + iconBelowMargin + tempRainMargin) * 2),
             y2_min = 0;
-        if (this.config.showRain || this.config.showSnow) {
-            if (
-                this.config.showZeroRain ||
-                maxRain > 0 ||
-                this.config.showZeroSnow ||
-                maxSnow > 0
-            ) {
-                y1_min = y1_min - (maxValue - minValue);
-            }
-        }
+        if (showRainSnow) y1_min = y1_min - (maxValue - minValue);
         const ranges = {
             y1: {
                 min: y1_min,

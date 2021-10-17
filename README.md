@@ -71,8 +71,8 @@ You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/
 | units | | `standard` | Units of measurement documented in [OpenWeather API document](https://openweathermap.org/api/one-call-api). `standard`, `metric` and `imperial` units are available. |
 | chartjsVersion | | `3.4.0` | Version of [Chart.js](https://www.chartjs.org/) |
 | chartjsDatalabelsVersion | | `2.0.0` | Version of Chart.js [Datalabels plugin](https://github.com/chartjs/chartjs-plugin-datalabels) |
-| height | | `300px` | Height of the chart area |
-| width | | `500px` | Width of the chart area |
+| height | | `300px` | Height of the chart area in px |
+| width | | `500px` | Width of the chart area in px |
 | fontSize | | `16` | Font size of characters in the chart |
 | fontWeight | | `normal` | Font weight of characters in the chart. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight for checking available values. |
 | timeOffsetHours | | `0` | Offset in hours. This is used when your timezone is different from the timezone set in MagicMirror server. |
