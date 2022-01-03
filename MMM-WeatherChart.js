@@ -52,6 +52,7 @@ Module.register("MMM-WeatherChart", {
         curveTension: 0.4,
         datalabelsDisplay: "auto",
         datalabelsOffset: 4,
+        datalabelsRoundDecimalPlace: 1,
     },
 
     requiresVersion: "2.15.0",
@@ -148,10 +149,9 @@ Module.register("MMM-WeatherChart", {
 
     formatRain: function (rain) {
         if (this.config.rainUnit == "inch") {
-            return Math.round((rain / 25.4) * 100) / 100;
-        } else {
-            return Math.round(rain * 10) / 10;
+            return rain / 25.4;
         }
+        return rain;
     },
 
     getIconImage: function (iconId, callback) {
@@ -310,7 +310,7 @@ Module.register("MMM-WeatherChart", {
                 data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
             );
             let iconID = data[i].weather[0].icon;
-            let temp = Math.round(data[i].temp * 10) / 10;
+            let temp = data[i].temp;
             if (i === 0) {
                 dayTime = Boolean(iconID.match(/d$/));
             }
@@ -417,6 +417,11 @@ Module.register("MMM-WeatherChart", {
                     weight: this.config.fontWeight,
                 },
                 display: this.config.datalabelsDisplay,
+                formatter: function (value) {
+                    let place = 10 ** self.config.datalabelsRoundDecimalPlace;
+                    let label = Math.round(value * place) / place;
+                    return label;
+                },
             },
             data: dayTemps,
             yAxisID: "y1",
@@ -435,6 +440,11 @@ Module.register("MMM-WeatherChart", {
                     weight: this.config.fontWeight,
                 },
                 display: this.config.datalabelsDisplay,
+                formatter: function (value) {
+                    let place = 10 ** self.config.datalabelsRoundDecimalPlace;
+                    let label = Math.round(value * place) / place;
+                    return label;
+                },
             },
             data: nightTemps,
             yAxisID: "y1",
@@ -468,9 +478,12 @@ Module.register("MMM-WeatherChart", {
                             weight: this.config.fontWeight,
                         },
                         display: this.config.datalabelsDisplay,
-                        formatter: function (value, context) {
+                        formatter: function (value) {
+                            let place =
+                                10 ** self.config.datalabelsRoundDecimalPlace;
+                            let label = Math.round(value * place) / place;
                             return self.config.showZeroRain || value > 0
-                                ? value
+                                ? label
                                 : "";
                         },
                     },
@@ -497,9 +510,12 @@ Module.register("MMM-WeatherChart", {
                             weight: this.config.fontWeight,
                         },
                         display: this.config.datalabelsDisplay,
-                        formatter: function (value, context) {
+                        formatter: function (value) {
+                            let place =
+                                10 ** self.config.datalabelsRoundDecimalPlace;
+                            let label = Math.round(value * place) / place;
                             return self.config.showZeroSnow || value > 0
-                                ? value
+                                ? label
                                 : "";
                         },
                     },
@@ -538,6 +554,7 @@ Module.register("MMM-WeatherChart", {
     },
 
     getDailyDataset: function () {
+        const self = this;
         const data = this.weatherdata.daily;
 
         // Add dummy data to make space on the left and right side of the chart
@@ -567,8 +584,8 @@ Module.register("MMM-WeatherChart", {
                     this.getDayString(dateTime) + " " + dateTime.getDate()
                 );
             }
-            maxTemps.push(Math.round(data[i].temp.max * 10) / 10);
-            minTemps.push(Math.round(data[i].temp.min * 10) / 10);
+            maxTemps.push(data[i].temp.max);
+            minTemps.push(data[i].temp.min);
             if (data[i].rain) {
                 if (data[i].snow && this.config.includeSnow) {
                     rains.push(this.formatRain(data[i].rain + data[i].snow));
@@ -637,7 +654,7 @@ Module.register("MMM-WeatherChart", {
 
         const datasets = [];
         datasets.push({
-            label: "Minimum Temparature",
+            label: "Minimum Temperature",
             backgroundColor: this.config.backgroundColor,
             borderColor: this.config.colorMin,
             pointBackgroundColor: this.config.colorMin,
@@ -649,12 +666,17 @@ Module.register("MMM-WeatherChart", {
                     weight: this.config.fontWeight,
                 },
                 display: this.config.datalabelsDisplay,
+                formatter: function (value) {
+                    let place = 10 ** self.config.datalabelsRoundDecimalPlace;
+                    let label = Math.round(value * place) / place;
+                    return label;
+                },
             },
             data: minTemps,
             yAxisID: "y1",
         });
         datasets.push({
-            label: "Maximum Temparature",
+            label: "Maximum Temperature",
             backgroundColor: this.config.backgroundColor,
             borderColor: this.config.colorMax,
             pointBackgroundColor: this.config.colorMax,
@@ -666,6 +688,11 @@ Module.register("MMM-WeatherChart", {
                     weight: this.config.fontWeight,
                 },
                 display: this.config.datalabelsDisplay,
+                formatter: function (value) {
+                    let place = 10 ** self.config.datalabelsRoundDecimalPlace;
+                    let label = Math.round(value * place) / place;
+                    return label;
+                },
             },
             data: maxTemps,
             yAxisID: "y1",
@@ -699,9 +726,12 @@ Module.register("MMM-WeatherChart", {
                             weight: this.config.fontWeight,
                         },
                         display: this.config.datalabelsDisplay,
-                        formatter: function (value, context) {
+                        formatter: function (value) {
+                            let place =
+                                10 ** self.config.datalabelsRoundDecimalPlace;
+                            let label = Math.round(value * place) / place;
                             return self.config.showZeroRain || value > 0
-                                ? value
+                                ? label
                                 : "";
                         },
                     },
@@ -728,9 +758,12 @@ Module.register("MMM-WeatherChart", {
                             weight: this.config.fontWeight,
                         },
                         display: this.config.datalabelsDisplay,
-                        formatter: function (value, context) {
+                        formatter: function (value) {
+                            let place =
+                                10 ** self.config.datalabelsRoundDecimalPlace;
+                            let label = Math.round(value * place) / place;
                             return self.config.showZeroSnow || value > 0
-                                ? value
+                                ? label
                                 : "";
                         },
                     },
