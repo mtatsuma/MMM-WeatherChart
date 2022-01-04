@@ -84,7 +84,7 @@ You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/
 | showIcon | | `false` | Show weather Icon on the top |
 | showRain | | `false` | Show rain volume on the bottom |
 | showZeroRain | | `true` | Show rain chart even when there is no rain volume. This option is effective only when `showRain` is true. |
-| rainUnit | | `mm` | Unit of rain volume (`mm` or `inch`). For `mm` unit, the value is rounded to the first decimal place. For `inch` unit, the value is rounded to the second decimal place. |
+| rainUnit | | `mm` | Unit of rain volume (`mm` or `inch`) |
 | rainMinHeight | | `0.01` | Minimum height (in mm or inch) of the rain volume chart. When the max rain volume in the chart is less than this value, the height of chart is set as this value. Otherwise, the height of the chart is set acoording to the max rain volume. |
 | includeSnow | | `false` | If true, snow volume is included in the rain volume chart and the chart means rain + snow volume (i.e. precipitation). |
 | showSnow | | `false` | Show snow volume line in the rain volume chart. If you enable both of showRain and showSnow, datalabels for snow volume is not appeared because those can overlap with the rain volume datalabels. |
@@ -101,3 +101,4 @@ You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/
 | curveTension | | `0.4` | Tension of line chart in Chart.js. See https://www.chartjs.org/docs/latest/charts/line.html#line-styling for details. |
 | datalabelsDisplay | | `auto` | Visibility of data labels. See https://chartjs-plugin-datalabels.netlify.app/guide/positioning.html#visibility for details. 
 | datalabelsOffset | | `4` | Offset of data labels. See https://chartjs-plugin-datalabels.netlify.app/guide/positioning.html#alignment-and-offset for details.
+| datalabelsRoundDecimalPlace | | `1` | Decimal place to which round for data labels on charts. When you set this option as `0`, the labels are rounded to integer. This option is affected only on the labels (not affected on the data values). |
