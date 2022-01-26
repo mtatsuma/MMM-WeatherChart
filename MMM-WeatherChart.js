@@ -53,6 +53,7 @@ Module.register("MMM-WeatherChart", {
         datalabelsDisplay: "auto",
         datalabelsOffset: 4,
         datalabelsRoundDecimalPlace: 1,
+        largeOpenWeatherIcon: false,
     },
 
     requiresVersion: "2.15.0",
@@ -158,7 +159,11 @@ Module.register("MMM-WeatherChart", {
         let self = this;
         let iconImage = new Image();
         if (iconId) {
-            iconImage.src = this.config.iconURLBase + iconId + ".png";
+            if (this.config.largeOpenWeatherIcon) {
+                iconImage.src = this.config.iconURLBase + iconId + "@2x.png";
+            } else {
+                iconImage.src = this.config.iconURLBase + iconId + ".png";
+            }
         }
         return iconImage;
     },

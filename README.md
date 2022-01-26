@@ -102,3 +102,4 @@ You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/
 | datalabelsDisplay | | `auto` | Visibility of data labels. See https://chartjs-plugin-datalabels.netlify.app/guide/positioning.html#visibility for details. 
 | datalabelsOffset | | `4` | Offset of data labels. See https://chartjs-plugin-datalabels.netlify.app/guide/positioning.html#alignment-and-offset for details.
 | datalabelsRoundDecimalPlace | | `1` | Decimal place to which round for data labels on charts. When you set this option as `0`, the labels are rounded to integer. This option is affected only on the labels (not affected on the data values). |
+| largeOpenWeatherIcon | | `false` | `true` or `false`. Weather Icons from OpenWeather becomes 2 times larger (100 x 100) if true. |
