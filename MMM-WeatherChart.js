@@ -411,7 +411,6 @@ Module.register("MMM-WeatherChart", {
         const datasets = [];
         datasets.push({
             label: "Day Temparature",
-            backgroundColor: this.config.backgroundColor,
             borderColor: this.config.color,
             pointBackgroundColor: this.config.color,
             datalabels: {
@@ -433,7 +432,6 @@ Module.register("MMM-WeatherChart", {
         });
         datasets.push({
             label: "Night Temparature",
-            backgroundColor: this.config.backgroundColor,
             borderColor: this.config.color,
             pointBackgroundColor: this.config.color,
             borderDash: this.config.nightBorderDash,
@@ -457,8 +455,7 @@ Module.register("MMM-WeatherChart", {
         if (this.config.showIcon) {
             datasets.push({
                 label: "Icons",
-                backgroundColor: this.config.backgroundColor,
-                borderColor: this.config.backgroundColor,
+                borderWidth: 0,
                 data: iconLine,
                 pointStyle: icons,
                 datalabels: {
@@ -660,7 +657,6 @@ Module.register("MMM-WeatherChart", {
         const datasets = [];
         datasets.push({
             label: "Minimum Temperature",
-            backgroundColor: this.config.backgroundColor,
             borderColor: this.config.colorMin,
             pointBackgroundColor: this.config.colorMin,
             datalabels: {
@@ -682,7 +678,6 @@ Module.register("MMM-WeatherChart", {
         });
         datasets.push({
             label: "Maximum Temperature",
-            backgroundColor: this.config.backgroundColor,
             borderColor: this.config.colorMax,
             pointBackgroundColor: this.config.colorMax,
             datalabels: {
@@ -705,8 +700,7 @@ Module.register("MMM-WeatherChart", {
         if (this.config.showIcon) {
             datasets.push({
                 label: "Icons",
-                backgroundColor: this.config.backgroundColor,
-                borderColor: this.config.backgroundColor,
+                borderWidth: 0,
                 data: iconLine,
                 pointStyle: icons,
                 datalabels: {
@@ -833,12 +827,29 @@ Module.register("MMM-WeatherChart", {
             Chart.defaults.font.weight = this.config.fontWeight;
             Chart.defaults.color = this.config.color;
             Chart.register(ChartDataLabels);
+
+            // Plugin for background color config
+            // Refer:
+            // https://www.chartjs.org/docs/latest/configuration/canvas-background.html#color
+            const plugin = {
+                id: "custom_canvas_background_color",
+                beforeDraw: (chart) => {
+                    const ctx = chart.canvas.getContext("2d");
+                    ctx.save();
+                    ctx.globalCompositeOperation = "destination-over";
+                    ctx.fillStyle = this.config.backgroundColor;
+                    ctx.fillRect(0, 0, chart.width, chart.height);
+                    ctx.restore();
+                },
+            };
+
             this.chart = new Chart(ctx, {
                 type: "line",
                 data: {
                     labels: dataset.labels,
                     datasets: dataset.datasets,
                 },
+                plugins: [plugin],
                 options: {
                     maintainAspectRatio: false,
                     tension: this.config.curveTension,
@@ -852,6 +863,12 @@ Module.register("MMM-WeatherChart", {
                         },
                     },
                     scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                borderWidth: 0,
+                            },
+                        },
                         y1: {
                             display: false,
                             min: dataset.ranges.y1.min,
