@@ -880,8 +880,10 @@ Module.register("MMM-WeatherChart", {
                             max: dataset.ranges.y2.max,
                         },
                     },
+                    animation: { duration: 500 },
                 },
             });
+            this.chart.update();
             wrapper.appendChild(wrapperCanvas);
         }
 
