@@ -32,6 +32,7 @@ Module.register("MMM-WeatherChart", {
         iconURLBase: "https://openweathermap.org/img/wn/",
         dataType: "hourly",
         nightBorderDash: [5, 1],
+        pressureBorderDash: [5,1],
         showIcon: false,
         showPressure: false,
         showRain: false,
@@ -46,7 +47,7 @@ Module.register("MMM-WeatherChart", {
         colorMax: "rgba(255, 255, 255, 1)",
         colorRain: "rgba(255, 255, 255, 1)",
         colorSnow: "rgba(255, 255, 255, 1)",
-        colorPressure: "rgba(255, 255, 0, 0.8)",
+        colorPressure: "rgba(255, 255, 255, 1)",
         backgroundColor: "rgba(0, 0, 0, 0)",
         fillColor: "rgba(255, 255, 255, 0.1)",
         dailyLabel: "date",
@@ -474,6 +475,7 @@ Module.register("MMM-WeatherChart", {
                 label: "Pressure",
              borderColor: this.config.colorPressure,
             pointBackgroundColor: this.config.colorPressure,
+            borderDash: this.config.pressureBorderDash,
             datalabels: {
                 color: this.config.color,
                 align: "top",
@@ -582,8 +584,9 @@ Module.register("MMM-WeatherChart", {
                 Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
                 (2 + iconTopMargin + iconBelowMargin + tempRainMargin),
             y2_min = 0,
-            y3_max = maxPressure + 20,
-            y3_min = minPressure - 20;
+            y3_min = minPressure - (maxPressure - minPressure) * iconTopMargin,
+            y3_max = maxPressure + ((maxPressure - minPressure) * iconTopMargin);
+            
         if (showRainSnow) y1_min = y1_min - (maxTemp - minTemp);
         const ranges = {
             y1: {
@@ -757,6 +760,7 @@ Module.register("MMM-WeatherChart", {
 		    label: "Pressure",
 		    borderColor: this.config.colorPressure,
 		    pointBackgroundColor: this.config.colorPressure,
+            borderDash: this.config.pressureBorderDash,
 		    datalabels: {
 		        color: this.config.colorPressure,
 		        align: "top",
@@ -857,6 +861,9 @@ Module.register("MMM-WeatherChart", {
                 });
             }
         }
+        
+        minPressure = this.getMin(pressures);
+        maxPressure = this.getMax(pressures);
 
         // Set Y-Axis range not to overlap each other
         let y1_max = iconLine[0] + (maxValue - minValue) * iconTopMargin,
@@ -865,8 +872,8 @@ Module.register("MMM-WeatherChart", {
                 Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
                 (2 + (iconTopMargin + iconBelowMargin + tempRainMargin) * 2),
             y2_min = 0,
-            yPressure_Min = this.getMin(pressures),
-            yPressure_Max = this.getMax(pressures);
+            y3_min = minPressure - (maxPressure - minPressure) * iconTopMargin,
+            y3_max = maxPressure + ((maxPressure - minPressure) * iconTopMargin);
             
         if (showRainSnow) y1_min = y1_min - (maxValue - minValue);
         const ranges = {
@@ -879,8 +886,8 @@ Module.register("MMM-WeatherChart", {
                 max: y2_max,
             },
             y3: {
-                min: yPressure_Min,
-                max: yPressure_Max,
+                min: y3_min,
+                max: y3_max,
             },
              
         };
@@ -970,6 +977,12 @@ Module.register("MMM-WeatherChart", {
                             min: dataset.ranges.y2.min,
                             max: dataset.ranges.y2.max,
                         },
+                        y3: {
+                            display: false,
+                            min: dataset.ranges.y3.min,
+                            max: dataset.ranges.y3.max,
+                        },
+                        
                     },
                     animation: { duration: 500 },
                 },
