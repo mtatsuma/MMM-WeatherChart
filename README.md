@@ -103,3 +103,6 @@ You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/
 | datalabelsOffset | | `4` | Offset of data labels. See https://chartjs-plugin-datalabels.netlify.app/guide/positioning.html#alignment-and-offset for details.
 | datalabelsRoundDecimalPlace | | `1` | Decimal place to which round for data labels on charts. When you set this option as `0`, the labels are rounded to integer. This option is affected only on the labels (not affected on the data values). |
 | largeOpenWeatherIcon | | `false` | `true` or `false`. Weather Icons from OpenWeather becomes 2 times larger (100 x 100) if true. |
+| showPressure | | `false` | `true` or `false`. Toggles display of pressure values. Notes if units is 'imperial', will display in inHg |
+| colorPressure | | `rgba(255, 255, 225, 1)` | Color of the pressure line, if shown |
+|pressureBorderDash | | `[5, 1]` | Style of dash line for pressure (`[<line length>, <blank length>]`). This option is available only for `hourly` data type. |

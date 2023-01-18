@@ -32,7 +32,9 @@ Module.register("MMM-WeatherChart", {
         iconURLBase: "https://openweathermap.org/img/wn/",
         dataType: "hourly",
         nightBorderDash: [5, 1],
+        pressureBorderDash: [5,1],
         showIcon: false,
+        showPressure: false,
         showRain: false,
         showZeroRain: true,
         rainUnit: "mm",
@@ -45,6 +47,7 @@ Module.register("MMM-WeatherChart", {
         colorMax: "rgba(255, 255, 255, 1)",
         colorRain: "rgba(255, 255, 255, 1)",
         colorSnow: "rgba(255, 255, 255, 1)",
+        colorPressure: "rgba(255, 255, 255, 1)",
         backgroundColor: "rgba(0, 0, 0, 0)",
         fillColor: "rgba(255, 255, 255, 0.1)",
         dailyLabel: "date",
@@ -199,6 +202,14 @@ Module.register("MMM-WeatherChart", {
         }
         return max;
     },
+    
+    getPressureValue( hPa ){
+    	if( this.config.units == "imperial" ){
+        	return hPa * 0.029529983071445; // return value as inHg
+            } else {
+            	return hPa;
+            }
+    },
 
     // Calculate MarginFactors from the simultanious equations
     //
@@ -302,7 +313,8 @@ Module.register("MMM-WeatherChart", {
             dayTemps = [NaN],
             nightTemps = [NaN],
             labels = [""],
-            iconIDs = [NaN];
+            iconIDs = [NaN],
+            pressures = [NaN];
 
         data.sort(function (a, b) {
             if (a.dt < b.dt) return -1;
@@ -311,6 +323,9 @@ Module.register("MMM-WeatherChart", {
         });
         let dayTime;
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
+        
+           pressures.push( this.getPressureValue(data[i].pressure) );
+        
             let dateTime = new Date(
                 data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
             );
@@ -371,11 +386,14 @@ Module.register("MMM-WeatherChart", {
         nightTemps.push(NaN);
         labels.push("");
         iconIDs.push(NaN);
+        pressures.push(NaN);
 
         const minTemp = this.getMin(temps),
             maxTemp = this.getMax(temps),
             maxRain = this.getMax(rains),
             maxSnow = this.getMax(snows),
+            maxPressure = this.getMax(pressures),
+            minPressure = this.getMin(pressures),
             iconLine = [],
             icons = [];
 
@@ -452,6 +470,32 @@ Module.register("MMM-WeatherChart", {
             data: nightTemps,
             yAxisID: "y1",
         });
+        if (this.config.showPressure) {
+            datasets.push({
+                label: "Pressure",
+             borderColor: this.config.colorPressure,
+            pointBackgroundColor: this.config.colorPressure,
+            borderDash: this.config.pressureBorderDash,
+            datalabels: {
+                color: this.config.color,
+                align: "top",
+                offset: this.config.datalabelsOffset,
+                font: {
+                    weight: this.config.fontWeight,
+                },
+                display: this.config.datalabelsDisplay,
+                formatter: function (value) {
+                    let place = 10 ** self.config.datalabelsRoundDecimalPlace;
+                    let label = Math.round(value * place) / place;
+                    return label;
+                },
+            },
+                data: pressures,
+                //pointStyle: "star",
+                //fill: true,
+                yAxisID: "y3",
+            });
+        }        
         if (this.config.showIcon) {
             datasets.push({
                 label: "Icons",
@@ -539,7 +583,10 @@ Module.register("MMM-WeatherChart", {
             y2_max =
                 Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
                 (2 + iconTopMargin + iconBelowMargin + tempRainMargin),
-            y2_min = 0;
+            y2_min = 0,
+            y3_min = minPressure - (maxPressure - minPressure) * iconTopMargin,
+            y3_max = maxPressure + ((maxPressure - minPressure) * iconTopMargin);
+            
         if (showRainSnow) y1_min = y1_min - (maxTemp - minTemp);
         const ranges = {
             y1: {
@@ -549,6 +596,10 @@ Module.register("MMM-WeatherChart", {
             y2: {
                 min: y2_min,
                 max: y2_max,
+            },
+            y3: {
+            	min: y3_min,
+            	max: y3_max,
             },
         };
 
@@ -566,7 +617,8 @@ Module.register("MMM-WeatherChart", {
             rains = [NaN],
             snows = [NaN],
             labels = [""],
-            iconIDs = [NaN];
+            iconIDs = [NaN],
+            pressures = [NaN];
 
         data.sort(function (a, b) {
             if (a.dt < b.dt) return -1;
@@ -574,6 +626,9 @@ Module.register("MMM-WeatherChart", {
             return 0;
         });
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
+        
+            pressures.push( this.getPressureValue(data[i].pressure) );
+            
             const dateTime = new Date(
                 data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
             );
@@ -607,6 +662,7 @@ Module.register("MMM-WeatherChart", {
                 snows.push(0);
             }
             iconIDs.push(data[i].weather[0].icon);
+            
         }
 
         // Add dummy data to make space on the left and right side of the chart
@@ -617,6 +673,7 @@ Module.register("MMM-WeatherChart", {
         snows.push(NaN);
         labels.push("");
         iconIDs.push(NaN);
+        pressures.push(NaN);
 
         const minValue = this.getMin(minTemps),
             maxValue = this.getMax(maxTemps),
@@ -697,6 +754,33 @@ Module.register("MMM-WeatherChart", {
             data: maxTemps,
             yAxisID: "y1",
         });
+        if (this.config.showPressure) {
+        
+		 datasets.push({
+		    label: "Pressure",
+		    borderColor: this.config.colorPressure,
+		    pointBackgroundColor: this.config.colorPressure,
+            borderDash: this.config.pressureBorderDash,
+		    datalabels: {
+		        color: this.config.colorPressure,
+		        align: "top",
+		        offset: this.config.datalabelsOffset,
+		        font: {
+		            weight: this.config.fontWeight,
+		        },
+		        display: this.config.datalabelsDisplay,
+		        formatter: function (value) {
+		            let place = 10 ** self.config.datalabelsRoundDecimalPlace;
+		            let label = Math.round(value * place) / place;
+		            return label;
+		        },
+		    },
+		    data: pressures,
+		    yAxisID: "y3",
+		});
+       
+        
+        }
         if (this.config.showIcon) {
             datasets.push({
                 label: "Icons",
@@ -777,6 +861,9 @@ Module.register("MMM-WeatherChart", {
                 });
             }
         }
+        
+        minPressure = this.getMin(pressures);
+        maxPressure = this.getMax(pressures);
 
         // Set Y-Axis range not to overlap each other
         let y1_max = iconLine[0] + (maxValue - minValue) * iconTopMargin,
@@ -784,7 +871,10 @@ Module.register("MMM-WeatherChart", {
             y2_max =
                 Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
                 (2 + (iconTopMargin + iconBelowMargin + tempRainMargin) * 2),
-            y2_min = 0;
+            y2_min = 0,
+            y3_min = minPressure - (maxPressure - minPressure) * iconTopMargin,
+            y3_max = maxPressure + ((maxPressure - minPressure) * iconTopMargin);
+            
         if (showRainSnow) y1_min = y1_min - (maxValue - minValue);
         const ranges = {
             y1: {
@@ -795,6 +885,11 @@ Module.register("MMM-WeatherChart", {
                 min: y2_min,
                 max: y2_max,
             },
+            y3: {
+                min: y3_min,
+                max: y3_max,
+            },
+             
         };
 
         return { labels: labels, datasets: datasets, ranges: ranges };
@@ -882,6 +977,12 @@ Module.register("MMM-WeatherChart", {
                             min: dataset.ranges.y2.min,
                             max: dataset.ranges.y2.max,
                         },
+                        y3: {
+                            display: false,
+                            min: dataset.ranges.y3.min,
+                            max: dataset.ranges.y3.max,
+                        },
+                        
                     },
                     animation: { duration: 500 },
                 },
