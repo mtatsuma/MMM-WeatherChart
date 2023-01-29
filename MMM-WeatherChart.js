@@ -32,7 +32,7 @@ Module.register("MMM-WeatherChart", {
         iconURLBase: "https://openweathermap.org/img/wn/",
         dataType: "hourly",
         nightBorderDash: [5, 1],
-        pressureBorderDash: [5,1],
+        pressureBorderDash: [5, 1],
         showIcon: false,
         showPressure: false,
         showRain: false,
@@ -202,13 +202,13 @@ Module.register("MMM-WeatherChart", {
         }
         return max;
     },
-    
-    getPressureValue( hPa ){
-    	if( this.config.units == "imperial" ){
-        	return hPa * 0.029529983071445; // return value as inHg
-            } else {
-            	return hPa;
-            }
+
+    getPressureValue(hPa) {
+        if (this.config.units == "imperial") {
+            return hPa * 0.029529983071445; // return value as inHg
+        } else {
+            return hPa;
+        }
     },
 
     // Calculate MarginFactors from the simultanious equations
@@ -323,9 +323,8 @@ Module.register("MMM-WeatherChart", {
         });
         let dayTime;
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
-        
-           pressures.push( this.getPressureValue(data[i].pressure) );
-        
+            pressures.push(this.getPressureValue(data[i].pressure));
+
             let dateTime = new Date(
                 data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
             );
@@ -473,29 +472,30 @@ Module.register("MMM-WeatherChart", {
         if (this.config.showPressure) {
             datasets.push({
                 label: "Pressure",
-             borderColor: this.config.colorPressure,
-            pointBackgroundColor: this.config.colorPressure,
-            borderDash: this.config.pressureBorderDash,
-            datalabels: {
-                color: this.config.color,
-                align: "top",
-                offset: this.config.datalabelsOffset,
-                font: {
-                    weight: this.config.fontWeight,
+                borderColor: this.config.colorPressure,
+                pointBackgroundColor: this.config.colorPressure,
+                borderDash: this.config.pressureBorderDash,
+                datalabels: {
+                    color: this.config.color,
+                    align: "top",
+                    offset: this.config.datalabelsOffset,
+                    font: {
+                        weight: this.config.fontWeight,
+                    },
+                    display: this.config.datalabelsDisplay,
+                    formatter: function (value) {
+                        let place =
+                            10 ** self.config.datalabelsRoundDecimalPlace;
+                        let label = Math.round(value * place) / place;
+                        return label;
+                    },
                 },
-                display: this.config.datalabelsDisplay,
-                formatter: function (value) {
-                    let place = 10 ** self.config.datalabelsRoundDecimalPlace;
-                    let label = Math.round(value * place) / place;
-                    return label;
-                },
-            },
                 data: pressures,
                 //pointStyle: "star",
                 //fill: true,
                 yAxisID: "y3",
             });
-        }        
+        }
         if (this.config.showIcon) {
             datasets.push({
                 label: "Icons",
@@ -584,9 +584,12 @@ Module.register("MMM-WeatherChart", {
                 Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
                 (2 + iconTopMargin + iconBelowMargin + tempRainMargin),
             y2_min = 0,
-            y3_min = minPressure - (maxPressure - minPressure) * iconTopMargin,
-            y3_max = maxPressure + ((maxPressure - minPressure) * iconTopMargin);
-            
+            y3_min = minPressure - (maxPressure - minPressure) * 0.1,
+            y3_max =
+                maxPressure +
+                (maxPressure - minPressure) *
+                    ((iconTopMargin + iconBelowMargin) / 2);
+
         if (showRainSnow) y1_min = y1_min - (maxTemp - minTemp);
         const ranges = {
             y1: {
@@ -598,8 +601,8 @@ Module.register("MMM-WeatherChart", {
                 max: y2_max,
             },
             y3: {
-            	min: y3_min,
-            	max: y3_max,
+                min: y3_min,
+                max: y3_max,
             },
         };
 
@@ -626,9 +629,8 @@ Module.register("MMM-WeatherChart", {
             return 0;
         });
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
-        
-            pressures.push( this.getPressureValue(data[i].pressure) );
-            
+            pressures.push(this.getPressureValue(data[i].pressure));
+
             const dateTime = new Date(
                 data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
             );
@@ -662,7 +664,6 @@ Module.register("MMM-WeatherChart", {
                 snows.push(0);
             }
             iconIDs.push(data[i].weather[0].icon);
-            
         }
 
         // Add dummy data to make space on the left and right side of the chart
@@ -755,31 +756,29 @@ Module.register("MMM-WeatherChart", {
             yAxisID: "y1",
         });
         if (this.config.showPressure) {
-        
-		 datasets.push({
-		    label: "Pressure",
-		    borderColor: this.config.colorPressure,
-		    pointBackgroundColor: this.config.colorPressure,
-            borderDash: this.config.pressureBorderDash,
-		    datalabels: {
-		        color: this.config.colorPressure,
-		        align: "top",
-		        offset: this.config.datalabelsOffset,
-		        font: {
-		            weight: this.config.fontWeight,
-		        },
-		        display: this.config.datalabelsDisplay,
-		        formatter: function (value) {
-		            let place = 10 ** self.config.datalabelsRoundDecimalPlace;
-		            let label = Math.round(value * place) / place;
-		            return label;
-		        },
-		    },
-		    data: pressures,
-		    yAxisID: "y3",
-		});
-       
-        
+            datasets.push({
+                label: "Pressure",
+                borderColor: this.config.colorPressure,
+                pointBackgroundColor: this.config.colorPressure,
+                borderDash: this.config.pressureBorderDash,
+                datalabels: {
+                    color: this.config.colorPressure,
+                    align: "top",
+                    offset: this.config.datalabelsOffset,
+                    font: {
+                        weight: this.config.fontWeight,
+                    },
+                    display: this.config.datalabelsDisplay,
+                    formatter: function (value) {
+                        let place =
+                            10 ** self.config.datalabelsRoundDecimalPlace;
+                        let label = Math.round(value * place) / place;
+                        return label;
+                    },
+                },
+                data: pressures,
+                yAxisID: "y3",
+            });
         }
         if (this.config.showIcon) {
             datasets.push({
@@ -861,7 +860,7 @@ Module.register("MMM-WeatherChart", {
                 });
             }
         }
-        
+
         minPressure = this.getMin(pressures);
         maxPressure = this.getMax(pressures);
 
@@ -872,9 +871,12 @@ Module.register("MMM-WeatherChart", {
                 Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
                 (2 + (iconTopMargin + iconBelowMargin + tempRainMargin) * 2),
             y2_min = 0,
-            y3_min = minPressure - (maxPressure - minPressure) * iconTopMargin,
-            y3_max = maxPressure + ((maxPressure - minPressure) * iconTopMargin);
-            
+            y3_min = minPressure - (maxPressure - minPressure) * 0.1,
+            y3_max =
+                maxPressure +
+                (maxPressure - minPressure) *
+                    ((iconTopMargin + iconBelowMargin) / 2);
+
         if (showRainSnow) y1_min = y1_min - (maxValue - minValue);
         const ranges = {
             y1: {
@@ -889,7 +891,6 @@ Module.register("MMM-WeatherChart", {
                 min: y3_min,
                 max: y3_max,
             },
-             
         };
 
         return { labels: labels, datasets: datasets, ranges: ranges };
@@ -982,7 +983,6 @@ Module.register("MMM-WeatherChart", {
                             min: dataset.ranges.y3.min,
                             max: dataset.ranges.y3.max,
                         },
-                        
                     },
                     animation: { duration: 500 },
                 },
