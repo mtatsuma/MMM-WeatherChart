@@ -326,6 +326,7 @@ Module.register("MMM-WeatherChart", {
         let dayTime;
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
             pressures.push(this.getPressureValue(data[i].pressure));
+            uvis.push(data[i].pressure);
 
             let dateTime = new Date(
                 data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
