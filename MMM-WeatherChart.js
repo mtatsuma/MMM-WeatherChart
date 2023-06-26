@@ -315,7 +315,7 @@ Module.register("MMM-WeatherChart", {
             nightTemps = [NaN],
             labels = [""],
             iconIDs = [NaN],
-            pressures = [NaN];
+            pressures = [NaN],
             uvis = [NaN];
 
         data.sort(function (a, b) {
