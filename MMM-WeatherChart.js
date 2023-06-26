@@ -36,6 +36,7 @@ Module.register("MMM-WeatherChart", {
         showIcon: false,
         showPressure: false,
         showRain: false,
+        showUV: false,
         showZeroRain: true,
         rainUnit: "mm",
         rainMinHeight: 0.01,
@@ -314,7 +315,8 @@ Module.register("MMM-WeatherChart", {
             nightTemps = [NaN],
             labels = [""],
             iconIDs = [NaN],
-            pressures = [NaN];
+            pressures = [NaN],
+            uvis = [NaN];
 
         data.sort(function (a, b) {
             if (a.dt < b.dt) return -1;
@@ -324,6 +326,7 @@ Module.register("MMM-WeatherChart", {
         let dayTime;
         for (let i = 0; i < Math.min(this.config.dataNum, data.length); i++) {
             pressures.push(this.getPressureValue(data[i].pressure));
+            uvis.push(data[i].uvi);
 
             let dateTime = new Date(
                 data[i].dt * 1000 + this.config.timeOffsetHours * 60 * 60 * 1000
@@ -386,6 +389,7 @@ Module.register("MMM-WeatherChart", {
         labels.push("");
         iconIDs.push(NaN);
         pressures.push(NaN);
+        uvis.push(NaN);
 
         const minTemp = this.getMin(temps),
             maxTemp = this.getMax(temps),
@@ -393,6 +397,7 @@ Module.register("MMM-WeatherChart", {
             maxSnow = this.getMax(snows),
             maxPressure = this.getMax(pressures),
             minPressure = this.getMin(pressures),
+            maxUV = this.getMax(uvis),
             iconLine = [],
             icons = [];
 
@@ -539,6 +544,33 @@ Module.register("MMM-WeatherChart", {
                 });
             }
         }
+        if (this.config.showUV) {
+                datasets.push({
+                    label: "UV Index",
+                    backgroundColor: this.config.fillColor,
+                    borderColor: this.config.color,
+                    borderWidth: 1,
+                    pointBackgroundColor: this.config.color,
+                    datalabels: {
+                        color: this.config.color,
+                        align: "top",
+                        offset: this.config.datalabelsOffset,
+                        font: {
+                            weight: this.config.fontWeight,
+                        },
+                        display: this.config.datalabelsDisplay,
+                        formatter: function (value) {
+                            let place =
+                                10 ** self.config.datalabelsRoundDecimalPlace;
+                            let label = Math.round(value * place) / place;
+                            return label
+                        },
+                    },
+                    data: uvis,
+                    fill: true,
+                    yAxisID: "y2",
+                });
+        }
         if (this.config.showSnow) {
             if (this.config.showZeroSnow || maxSnow > 0) {
                 datasets.push({
@@ -581,7 +613,7 @@ Module.register("MMM-WeatherChart", {
         let y1_max = iconLine[0] + (maxTemp - minTemp) * iconTopMargin,
             y1_min = minTemp - (maxTemp - minTemp) * tempRainMargin,
             y2_max =
-                Math.max(maxRain, maxSnow, this.config.rainMinHeight) *
+                Math.max(maxRain, maxSnow, maxUV, this.config.rainMinHeight) *
                 (2 + iconTopMargin + iconBelowMargin + tempRainMargin),
             y2_min = 0,
             y3_min = minPressure - (maxPressure - minPressure) * 0.1,

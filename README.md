@@ -50,7 +50,8 @@ You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/
                 "showRain": true,
                 "includeSnow": true,
                 "showSnow": true,
-                "showIcon": true
+                "showIcon": true,
+                "showUV": true
             }
         }
    ]
@@ -83,6 +84,7 @@ You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/
 | nightBorderDash | | `[5, 1]` | Style of dash line for nighttime (`[<line length>, <blank length>]`). This option is available only for `hourly` data type. |
 | showIcon | | `false` | Show weather Icon on the top |
 | showRain | | `false` | Show rain volume on the bottom |
+| showUV | | `false` | Show UV Index |
 | showZeroRain | | `true` | Show rain chart even when there is no rain volume. This option is effective only when `showRain` is true. |
 | rainUnit | | `mm` | Unit of rain volume (`mm` or `inch`) |
 | rainMinHeight | | `0.01` | Minimum height (in mm or inch) of the rain volume chart. When the max rain volume in the chart is less than this value, the height of chart is set as this value. Otherwise, the height of the chart is set acoording to the max rain volume. |
