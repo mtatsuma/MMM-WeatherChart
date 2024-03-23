@@ -20,8 +20,8 @@ Module.register("MMM-WeatherChart", {
         lon: "",
         units: "standard",
         lang: "en",
-        chartjsVersion: "3.4.0",
-        chartjsDatalabelsVersion: "2.0.0",
+        chartjsVersion: "3.9.1",
+        chartjsDatalabelsVersion: "2.2.0",
         height: "300px",
         width: "500px",
         fontSize: 16,
@@ -305,16 +305,14 @@ Module.register("MMM-WeatherChart", {
         const self = this;
         const data = this.weatherdata.hourly;
 
-        // Add dummy data to make space on the left and right side of the chart
-        // otherwise the icon images are cut off by y-Axes.
-        const temps = [NaN],
-            rains = [NaN],
-            snows = [NaN],
-            dayTemps = [NaN],
-            nightTemps = [NaN],
-            labels = [""],
-            iconIDs = [NaN],
-            pressures = [NaN];
+        const temps = [],
+            rains = [],
+            snows = [],
+            dayTemps = [],
+            nightTemps = [],
+            labels = [],
+            iconIDs = [],
+            pressures = [];
 
         data.sort(function (a, b) {
             if (a.dt < b.dt) return -1;
@@ -375,17 +373,6 @@ Module.register("MMM-WeatherChart", {
             }
             iconIDs.push(iconID);
         }
-
-        // Add dummy data to make space on the left and right side of the chart
-        // otherwise the icon images are cut off by y-Axes.
-        temps.push(NaN);
-        rains.push(NaN);
-        snows.push(NaN);
-        dayTemps.push(NaN);
-        nightTemps.push(NaN);
-        labels.push("");
-        iconIDs.push(NaN);
-        pressures.push(NaN);
 
         const minTemp = this.getMin(temps),
             maxTemp = this.getMax(temps),
@@ -613,15 +600,13 @@ Module.register("MMM-WeatherChart", {
         const self = this;
         const data = this.weatherdata.daily;
 
-        // Add dummy data to make space on the left and right side of the chart
-        // otherwise the icon images are cut off by y-Axes.
-        const maxTemps = [NaN],
-            minTemps = [NaN],
-            rains = [NaN],
-            snows = [NaN],
-            labels = [""],
-            iconIDs = [NaN],
-            pressures = [NaN];
+        const maxTemps = [],
+            minTemps = [],
+            rains = [],
+            snows = [],
+            labels = [],
+            iconIDs = [],
+            pressures = [];
 
         data.sort(function (a, b) {
             if (a.dt < b.dt) return -1;
@@ -665,16 +650,6 @@ Module.register("MMM-WeatherChart", {
             }
             iconIDs.push(data[i].weather[0].icon);
         }
-
-        // Add dummy data to make space on the left and right side of the chart
-        // otherwise the icon images are cut off by y-Axes.
-        maxTemps.push(NaN);
-        minTemps.push(NaN);
-        rains.push(NaN);
-        snows.push(NaN);
-        labels.push("");
-        iconIDs.push(NaN);
-        pressures.push(NaN);
 
         const minValue = this.getMin(minTemps),
             maxValue = this.getMax(maxTemps),
@@ -967,6 +942,8 @@ Module.register("MMM-WeatherChart", {
                                 display: false,
                                 borderWidth: 0,
                             },
+							clip: false,
+							offset: true
                         },
                         y1: {
                             display: false,
