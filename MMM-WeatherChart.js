@@ -942,8 +942,8 @@ Module.register("MMM-WeatherChart", {
                                 display: false,
                                 borderWidth: 0,
                             },
-							clip: false,
-							offset: true
+                            clip: false,
+                            offset: true,
                         },
                         y1: {
                             display: false,
