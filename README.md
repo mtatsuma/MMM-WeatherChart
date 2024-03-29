@@ -69,8 +69,8 @@ You can check [available MMM-WeatherChart versions](https://github.com/mtatsuma/
 | lat | yes | | latitude of the place you want to get weather information |
 | lon | yes | | longitude of the place you want to get weather information |
 | units | | `standard` | Units of measurement documented in [OpenWeather API document](https://openweathermap.org/api/one-call-api). `standard`, `metric` and `imperial` units are available. |
-| chartjsVersion | | `3.4.0` | Version of [Chart.js](https://www.chartjs.org/) |
-| chartjsDatalabelsVersion | | `2.0.0` | Version of Chart.js [Datalabels plugin](https://github.com/chartjs/chartjs-plugin-datalabels) |
+| chartjsVersion | | `3.9.1` | Version of [Chart.js](https://www.chartjs.org/) |
+| chartjsDatalabelsVersion | | `2.2.0` | Version of Chart.js [Datalabels plugin](https://github.com/chartjs/chartjs-plugin-datalabels) |
 | height | | `300px` | Height of the chart area in px |
 | width | | `500px` | Width of the chart area in px |
 | fontSize | | `16` | Font size of characters in the chart |
