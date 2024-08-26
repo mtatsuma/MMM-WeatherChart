@@ -13,7 +13,7 @@ Module.register("MMM-WeatherChart", {
         updateInterval: 10 * 60 * 1000,
         retryDelay: 5000,
         apiBase: "https://api.openweathermap.org/data/",
-        apiVersion: "2.5",
+        apiVersion: "3.0",
         apiEndpoint: "onecall",
         apiKey: "",
         lat: "",
