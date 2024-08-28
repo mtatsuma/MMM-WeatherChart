@@ -10,7 +10,7 @@ Daily Forecast (max and min temperature, weather icons on the top, rain volume (
 
 MagicMirror module for displaying weather forecasts from [OpenWeather](https://openweathermap.org/). Weather forecasts are displayed by using [Chart.js](https://www.chartjs.org/), an open-source free library for drawing charts.
 
-This module uses the OpenWeather API, which requires an API key. You'll need to subscribe to the [One Call API 3.0](https://openweathermap.org/price) and [limit](https://home.openweathermap.org/subscriptions) the number of calls per day to the free limit so you won't be charged. 
+This module uses the OpenWeather API, which requires an API key. You'll need to subscribe to the [One Call API 3.0](https://openweathermap.org/price) and [limit](https://home.openweathermap.org/subscriptions) the number of calls per day to the free limit so you won't be charged. It can take up to an hour for your API key to start working.
 
 ## Installation
 
